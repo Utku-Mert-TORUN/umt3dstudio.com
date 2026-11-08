@@ -15,6 +15,9 @@ var STR = {
     lblMaterial:"Malzeme", lblPrinter:"Yazıcı", lblWeight:"Filament ağırlığı", lblDensity:"Yoğunluk",
     lblFilPrice:"Filament fiyatı", lblWatt:"Yazıcı gücü", lblResinVol:"Reçine hacmi", lblResinPrice:"Reçine fiyatı",
     lblResinWatt:"Yazıcı + UV küvet gücü", lblConsumables:"Sarf malzeme (IPA, eldiven vb.)",
+    lblResinMaterial:"Reçine türü", lblResinPrinter:"Reçine yazıcısı",
+    lblBrand:"Marka (opsiyonel)", brandPh:"örn. eSUN, Polymaker, Prusament, Bambu Lab",
+    lblColor:"Renk",
     lblTime:"Baskı süresi", unitH:"sa", unitM:"dk", lblElec:"Elektrik birim fiyatı",
     h3t:"İşletme maliyetleri", h3s:"Bu bölüm tarayıcında saklanır, bir daha girmen gerekmez.",
     lblFail:"Fire / başarısız baskı payı", lblPost:"Son işlem / işçilik maliyeti",
@@ -45,6 +48,9 @@ var STR = {
     lblMaterial:"Material", lblPrinter:"Printer", lblWeight:"Filament weight", lblDensity:"Density",
     lblFilPrice:"Filament price", lblWatt:"Printer power", lblResinVol:"Resin volume", lblResinPrice:"Resin price",
     lblResinWatt:"Printer + UV tank power", lblConsumables:"Consumables (IPA, gloves, etc.)",
+    lblResinMaterial:"Resin type", lblResinPrinter:"Resin printer",
+    lblBrand:"Brand (optional)", brandPh:"e.g. eSUN, Polymaker, Prusament, Bambu Lab",
+    lblColor:"Color",
     lblTime:"Print time", unitH:"h", unitM:"min", lblElec:"Electricity rate",
     h3t:"Business costs", h3s:"This section is saved in your browser — you won't need to enter it again.",
     lblFail:"Failure / waste allowance", lblPost:"Post-processing / finishing cost",
@@ -72,7 +78,11 @@ function applyI18n(){
     var k = el.getAttribute("data-i18n");
     el.textContent = t(k);
   });
+  document.querySelectorAll("[data-i18n-ph]").forEach(function(el){
+    el.placeholder = t(el.getAttribute("data-i18n-ph"));
+  });
   document.title = lang === "tr" ? "Hesaplayıcı — Umt3D Studio" : "Calculator — Umt3D Studio";
+  renderColorSwatches();
   render();
 }
 
@@ -94,7 +104,11 @@ function saveProfile(){
       depToggle: $("depToggle").checked, printerCost: $("printerCost").value,
       lifetimeHours: $("lifetimeHours").value, fxRate: $("fxRate").value,
       bizName: $("bizName") ? $("bizName").value : "", material: $("material").value,
-      printer: $("printer").value, resinPrice: $("resinPrice").value
+      printer: $("printer").value, resinPrice: $("resinPrice").value,
+      materialBrand: $("materialBrand") ? $("materialBrand").value : "",
+      color: selectedColor,
+      resinMaterial: $("resinMaterial") ? $("resinMaterial").value : "",
+      resinPrinter: $("resinPrinter") ? $("resinPrinter").value : ""
     };
     localStorage.setItem(STORE_KEY, JSON.stringify(data));
     var pill = $("savedPill");
@@ -108,17 +122,58 @@ function saveProfile(){
 var MATERIALS = [
   {id:"pla", tr:"PLA", en:"PLA", density:1.24, price:650},
   {id:"pla_silk", tr:"PLA Silk", en:"Silk PLA", density:1.23, price:750},
+  {id:"pla_matte", tr:"PLA Mat", en:"Matte PLA", density:1.24, price:750},
+  {id:"pla_wood", tr:"PLA Ahşap Dolgulu", en:"PLA Wood-fill", density:1.15, price:900},
+  {id:"pla_glow", tr:"PLA Karanlıkta Parlayan", en:"PLA Glow-in-the-dark", density:1.26, price:1050},
+  {id:"pla_marble", tr:"PLA Mermer Desenli", en:"PLA Marble", density:1.25, price:950},
+  {id:"pla_metal", tr:"PLA Metal Dolgulu (Bronz/Bakır)", en:"PLA Metal-fill (Bronze/Copper)", density:1.75, price:1900},
   {id:"petg", tr:"PETG", en:"PETG", density:1.27, price:750},
+  {id:"petg_cf", tr:"PETG Karbon Fiber", en:"PETG Carbon Fiber", density:1.30, price:1600},
   {id:"abs", tr:"ABS", en:"ABS", density:1.04, price:700},
   {id:"asa", tr:"ASA", en:"ASA", density:1.05, price:850},
-  {id:"tpu", tr:"TPU (Esnek)", en:"TPU (Flexible)", density:1.21, price:1100},
+  {id:"tpu85", tr:"TPU 85A (Çok Esnek)", en:"TPU 85A (Very Flexible)", density:1.20, price:1200},
+  {id:"tpu95", tr:"TPU 95A (Esnek)", en:"TPU 95A (Flexible)", density:1.21, price:1100},
   {id:"nylon", tr:"Naylon (PA)", en:"Nylon (PA)", density:1.14, price:1600},
+  {id:"nylon_cf", tr:"Naylon Karbon Fiber (PA-CF)", en:"Nylon Carbon Fiber (PA-CF)", density:1.19, price:2400},
+  {id:"pahtcf", tr:"PAHT-CF", en:"PAHT-CF", density:1.19, price:2600},
   {id:"pc", tr:"Polikarbonat (PC)", en:"Polycarbonate (PC)", density:1.19, price:1700},
+  {id:"pp", tr:"Polipropilen (PP)", en:"Polypropylene (PP)", density:0.90, price:1300},
   {id:"hips", tr:"HIPS", en:"HIPS", density:1.03, price:750},
   {id:"pva", tr:"PVA (Destek)", en:"PVA (Support)", density:1.23, price:2200},
   {id:"cf_pla", tr:"Karbon Fiber PLA", en:"Carbon Fiber PLA", density:1.30, price:1500},
-  {id:"wood", tr:"Ahşap Dolgulu", en:"Wood-fill", density:1.15, price:900},
+  {id:"gf_pla", tr:"Cam Fiber PLA (GF)", en:"Glass Fiber PLA (GF)", density:1.33, price:1400},
+  {id:"wood", tr:"Ahşap Dolgulu (PLA değil)", en:"Wood-fill (non-PLA base)", density:1.15, price:900},
   {id:"custom_fdm", tr:"Özel / Diğer", en:"Custom / Other", density:1.24, price:700}
+];
+
+var RESIN_MATERIALS = [
+  {id:"standard", tr:"Standart Reçine", en:"Standard Resin", price:1400},
+  {id:"tough_abs", tr:"Sert / ABS-benzeri Reçine", en:"Tough / ABS-like Resin", price:1900},
+  {id:"flexible", tr:"Esnek Reçine", en:"Flexible Resin", price:2200},
+  {id:"water_wash", tr:"Suda Yıkanabilir Reçine", en:"Water-washable Resin", price:1600},
+  {id:"castable", tr:"Dökülebilir Reçine (Mücevher)", en:"Castable Resin (Jewelry)", price:3200},
+  {id:"dental", tr:"Dental / Biyouyumlu Reçine", en:"Dental / Biocompatible Resin", price:4200},
+  {id:"high_temp", tr:"Yüksek Sıcaklık Reçinesi", en:"High-Temp Resin", price:2800},
+  {id:"custom_resin", tr:"Özel / Diğer", en:"Custom / Other", price:1800}
+];
+
+var COLORS = [
+  {id:"black", tr:"Siyah", en:"Black", hex:"#1A1A1A"},
+  {id:"white", tr:"Beyaz", en:"White", hex:"#F5F5F2"},
+  {id:"gray", tr:"Gri", en:"Gray", hex:"#9A9A9A"},
+  {id:"silver", tr:"Gümüş", en:"Silver", hex:"#C6C9CC"},
+  {id:"red", tr:"Kırmızı", en:"Red", hex:"#E3362A"},
+  {id:"orange", tr:"Turuncu", en:"Orange", hex:"#F2792B"},
+  {id:"yellow", tr:"Sarı", en:"Yellow", hex:"#F3C230"},
+  {id:"gold", tr:"Altın", en:"Gold", hex:"#C9A227"},
+  {id:"green", tr:"Yeşil", en:"Green", hex:"#3DA35D"},
+  {id:"blue", tr:"Mavi", en:"Blue", hex:"#2E6FEE"},
+  {id:"skyblue", tr:"Gök Mavisi", en:"Sky Blue", hex:"#5CC3E8"},
+  {id:"purple", tr:"Mor", en:"Purple", hex:"#8A4FD1"},
+  {id:"pink", tr:"Pembe", en:"Pink", hex:"#F06BA8"},
+  {id:"brown", tr:"Kahverengi", en:"Brown", hex:"#8A5A3B"},
+  {id:"clear", tr:"Şeffaf", en:"Clear", hex:"#E8EEF2"},
+  {id:"natural", tr:"Doğal (Renksiz)", en:"Natural", hex:"#EDE3CF"}
 ];
 
 var PRINTERS = [
@@ -126,54 +181,109 @@ var PRINTERS = [
     {id:"ender3", name:"Ender 3 / 3 Pro", w:120},
     {id:"ender3v2", name:"Ender 3 V2 / Neo", w:150},
     {id:"ender3s1", name:"Ender 3 S1 / S1 Pro", w:170},
+    {id:"ender3v3", name:"Ender 3 V3 / V3 SE / KE", w:160},
     {id:"ender5", name:"Ender 5 / 5 Plus", w:160},
+    {id:"ender5s1", name:"Ender 5 S1", w:180},
+    {id:"cr6se", name:"CR-6 SE", w:150},
     {id:"cr10", name:"CR-10 / CR-10S", w:220},
+    {id:"cr10smart", name:"CR-10 Smart / Smart Pro", w:230},
     {id:"k1", name:"K1", w:280},
-    {id:"k1max", name:"K1 Max", w:320}
+    {id:"k1c", name:"K1C", w:280},
+    {id:"k1max", name:"K1 Max", w:320},
+    {id:"sermoon", name:"Sermoon V1 / D3", w:130}
   ]},
   {group:"Prusa Research", items:[
     {id:"mk3s", name:"i3 MK3S+", w:120},
     {id:"mk4", name:"MK4 / MK4S", w:150},
     {id:"mini", name:"MINI+", w:90},
-    {id:"xl", name:"XL", w:260}
+    {id:"xl", name:"XL", w:260},
+    {id:"coreone", name:"CORE One", w:180}
   ]},
   {group:"Bambu Lab", items:[
+    {id:"x1", name:"X1", w:170},
     {id:"x1c", name:"X1 Carbon", w:180},
+    {id:"x1e", name:"X1E", w:220},
     {id:"p1p", name:"P1P", w:170},
     {id:"p1s", name:"P1S", w:200},
+    {id:"p2s", name:"P2S", w:210},
     {id:"a1", name:"A1", w:150},
-    {id:"a1mini", name:"A1 Mini", w:90}
+    {id:"a1mini", name:"A1 Mini", w:90},
+    {id:"h2d", name:"H2D", w:280}
   ]},
   {group:"Anycubic", items:[
     {id:"kobra2", name:"Kobra 2 / 2 Pro", w:160},
+    {id:"kobra2max", name:"Kobra 2 Max", w:220},
     {id:"kobra3", name:"Kobra 3", w:180},
     {id:"vyper", name:"Vyper", w:150},
     {id:"megax", name:"Mega X / S", w:190}
   ]},
   {group:"Elegoo", items:[
     {id:"neptune3", name:"Neptune 3 / 3 Pro", w:150},
-    {id:"neptune4", name:"Neptune 4 / 4 Pro", w:170}
+    {id:"neptune4", name:"Neptune 4 / 4 Pro", w:170},
+    {id:"neptune4max", name:"Neptune 4 Max", w:220}
   ]},
   {group:"Qidi Tech", items:[
     {id:"xmax3", name:"X-Max 3", w:260},
     {id:"xplus3", name:"X-Plus 3", w:220},
+    {id:"xsmart3", name:"X-Smart 3", w:140},
     {id:"q1pro", name:"Q1 Pro", w:200}
   ]},
   {group:"Flashforge", items:[
     {id:"adv3", name:"Adventurer 3 / 4", w:90},
     {id:"adv5m", name:"Adventurer 5M (Pro)", w:160},
-    {id:"creatorpro", name:"Creator Pro 2", w:220}
+    {id:"creatorpro", name:"Creator Pro 2", w:220},
+    {id:"guider3", name:"Guider 3 Ultra", w:260}
   ]},
   {group:"Sovol", items:[
     {id:"sv06", name:"SV06 / SV06 Plus", w:150},
+    {id:"sv06ace", name:"SV06 Ace", w:160},
     {id:"sv07", name:"SV07 / SV07 Plus", w:190}
   ]},
   {group:"Artillery", items:[
     {id:"sidewinderx2", name:"Sidewinder X2 / X3", w:190},
     {id:"genius", name:"Genius Pro", w:170}
   ]},
+  {group:"Snapmaker", items:[
+    {id:"j1", name:"J1 / J1s", w:200},
+    {id:"artisan", name:"Artisan", w:230}
+  ]},
+  {group:"UltiMaker", items:[
+    {id:"s5", name:"S5", w:220},
+    {id:"method", name:"Method / Method X", w:260}
+  ]},
+  {group:"Voron (DIY)", items:[
+    {id:"voron24", name:"Voron 2.4", w:280},
+    {id:"vorontrident", name:"Voron Trident", w:260}
+  ]},
   {group:"Diğer / Other", items:[
     {id:"custom", name:"Özel güç değeri / Custom wattage", w:150}
+  ]}
+];
+
+var RESIN_PRINTERS = [
+  {group:"Elegoo", items:[
+    {id:"mars3", name:"Mars 3 / 3 Pro", w:55},
+    {id:"mars4", name:"Mars 4 / 4 Ultra", w:60},
+    {id:"mars5", name:"Mars 5 / 5 Ultra", w:65},
+    {id:"saturn2", name:"Saturn 2 / 3", w:75},
+    {id:"saturn4u", name:"Saturn 4 Ultra", w:90}
+  ]},
+  {group:"Anycubic", items:[
+    {id:"photonm3", name:"Photon Mono M3 / M3 Plus", w:65},
+    {id:"photonm3max", name:"Photon Mono M3 Max", w:90},
+    {id:"photonx2", name:"Photon Mono X2", w:80},
+    {id:"photon2", name:"Photon Mono 2", w:55}
+  ]},
+  {group:"Creality", items:[
+    {id:"halotone", name:"Halot-One / One Plus", w:60},
+    {id:"halotmage", name:"Halot-Mage / Mage Pro", w:85}
+  ]},
+  {group:"Phrozen", items:[
+    {id:"sonicmini8k", name:"Sonic Mini 8K / 8K S", w:70},
+    {id:"sonicmega8k", name:"Sonic Mega 8K", w:95}
+  ]},
+  {group:"Diğer / Other", items:[
+    {id:"customresin", name:"Özel güç değeri / Custom wattage", w:70}
   ]}
 ];
 
@@ -211,6 +321,68 @@ function populateSelects(){
     });
     pSel.appendChild(og);
   });
+
+  var rmSel = $("resinMaterial");
+  if(rmSel){
+    rmSel.innerHTML = "";
+    RESIN_MATERIALS.forEach(function(m){
+      var o = document.createElement("option");
+      o.value = m.id;
+      o.textContent = (lang==="tr" ? m.tr : m.en);
+      o.dataset.price = m.price;
+      rmSel.appendChild(o);
+    });
+  }
+
+  var rpSel = $("resinPrinter");
+  if(rpSel){
+    rpSel.innerHTML = "";
+    RESIN_PRINTERS.forEach(function(g){
+      var og = document.createElement("optgroup");
+      og.label = g.group;
+      g.items.forEach(function(p){
+        var o = document.createElement("option");
+        o.value = p.id;
+        o.textContent = p.name + "  ·  ~" + p.w + "W";
+        o.dataset.w = p.w;
+        og.appendChild(o);
+      });
+      rpSel.appendChild(og);
+    });
+  }
+
+  renderColorSwatches();
+}
+
+/* ---------------- color swatches ---------------- */
+var selectedColor = "black";
+function renderColorSwatches(){
+  var row = $("colorRow");
+  if(!row) return;
+  row.innerHTML = "";
+  COLORS.forEach(function(c){
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "swatch" + (c.id === selectedColor ? " active" : "");
+    btn.style.background = c.hex;
+    btn.title = (lang==="tr" ? c.tr : c.en);
+    btn.setAttribute("aria-label", (lang==="tr" ? c.tr : c.en));
+    btn.dataset.color = c.id;
+    btn.addEventListener("click", function(){
+      selectedColor = c.id;
+      row.querySelectorAll(".swatch").forEach(function(s){ s.classList.remove("active"); });
+      btn.classList.add("active");
+      var label = $("colorLabel");
+      if(label) label.textContent = lang==="tr" ? c.tr : c.en;
+      render(); scheduleSave();
+    });
+    row.appendChild(btn);
+  });
+  var label = $("colorLabel");
+  if(label){
+    var cur = COLORS.find(function(c){ return c.id === selectedColor; });
+    label.textContent = cur ? (lang==="tr" ? cur.tr : cur.en) : "";
+  }
 }
 
 /* ---------------- G-code parsing ---------------- */
@@ -364,8 +536,24 @@ $("printer").addEventListener("change", function(){
   if(opt && opt.dataset.w) $("watt").value = opt.dataset.w;
   render();
 });
-["filPrice","watt","resinWatt"].forEach(function(id){
-  $(id).addEventListener("input", function(){ $(id).dataset.touched = "1"; render(); });
+if($("resinMaterial")){
+  $("resinMaterial").addEventListener("change", function(){
+    var m = RESIN_MATERIALS.find(function(x){ return x.id === $("resinMaterial").value; });
+    if(m && !$("resinPrice").dataset.touched) $("resinPrice").value = m.price;
+    render();
+  });
+}
+if($("resinPrinter")){
+  $("resinPrinter").addEventListener("change", function(){
+    var opt = $("resinPrinter").selectedOptions[0];
+    if(opt && opt.dataset.w) $("resinWatt").value = opt.dataset.w;
+    render();
+  });
+}
+["filPrice","watt","resinWatt","resinPrice","materialBrand"].forEach(function(id){
+  var el = $(id);
+  if(!el) return;
+  el.addEventListener("input", function(){ el.dataset.touched = "1"; render(); scheduleSave(); });
 });
 
 /* ---------------- dropzone ---------------- */
@@ -483,6 +671,14 @@ function render(){
   var kwh = (watt/1000) * totalHours;
   elecCostTRY = kwh * elecPriceKwh;
   badgeHtml += '<span class="badge">'+Math.floor(totalMinutes/60)+'sa '+(totalMinutes%60)+'dk</span><span class="badge">'+fmt(watt,0)+'W</span>';
+  var curColor = COLORS.find(function(c){ return c.id === selectedColor; });
+  if(curColor){
+    badgeHtml += '<span class="badge"><span class="badge-swatch" style="background:'+curColor.hex+'"></span>'+(lang==="tr"?curColor.tr:curColor.en)+'</span>';
+  }
+  var brandVal = $("materialBrand") ? $("materialBrand").value.trim() : "";
+  if(brandVal){
+    badgeHtml += '<span class="badge">'+brandVal+'</span>';
+  }
   $("modeBadge").innerHTML = badgeHtml;
 
   var baseCostTRY = materialCostTRY + elecCostTRY + consumablesTRY;
@@ -601,6 +797,11 @@ $("copyBtn").addEventListener("click", function(){
     t("rowMargin") + ": " + sym + " " + fmt(fx(calc.marginTRY).value,2),
     t("rowTotal") + ": " + sym + " " + fmt(fx(calc.totalTRY).value,2)
   ];
+  var curColor = COLORS.find(function(c){ return c.id === selectedColor; });
+  var brandVal = $("materialBrand") ? $("materialBrand").value.trim() : "";
+  var specLine = (curColor ? (lang==="tr"?"Renk: ":"Color: ") + (lang==="tr"?curColor.tr:curColor.en) : "") +
+    (brandVal ? "  ·  " + (lang==="tr"?"Marka: ":"Brand: ") + brandVal : "");
+  if(specLine) lines.splice(4, 0, specLine);
   var text = lines.join("\n");
   function done(){
     var btn = $("copyBtn");
@@ -660,6 +861,10 @@ function init(){
       if(saved.resinPrice) $("resinPrice").value = saved.resinPrice;
       if(saved.material){ $("material").value = saved.material; $("material").dispatchEvent(new Event("change")); }
       if(saved.printer){ $("printer").value = saved.printer; $("printer").dispatchEvent(new Event("change")); }
+      if(saved.materialBrand && $("materialBrand")){ $("materialBrand").value = saved.materialBrand; $("materialBrand").dataset.touched = "1"; }
+      if(saved.color){ selectedColor = saved.color; }
+      if(saved.resinMaterial && $("resinMaterial")){ $("resinMaterial").value = saved.resinMaterial; }
+      if(saved.resinPrinter && $("resinPrinter")){ $("resinPrinter").value = saved.resinPrinter; $("resinPrinter").dispatchEvent(new Event("change")); }
 
       document.querySelectorAll("#langSeg button").forEach(function(b){ b.classList.toggle("active", b.getAttribute("data-lang")===lang); });
       document.querySelectorAll("#curSeg button").forEach(function(b){ b.classList.toggle("active", b.getAttribute("data-cur")===currency); });

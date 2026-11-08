@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Hesaplayıcı — Umt3D Studio</title>
 <meta name="description" content="G-code dosyandan otomatik ağırlık ve süre okuyan, malzeme ve yazıcı kütüphanesiyle 3D baskı maliyetini ve müşteri fiyatını hesaplayan ücretsiz araç.">
+<meta name="author" content="Utku Mert Torun">
 <link rel="icon" href="favicon.ico">
 <link rel="stylesheet" href="css/site.css">
 <link rel="stylesheet" href="css/calculator.css">
@@ -108,9 +109,25 @@
               <div class="unit-wrap"><input type="number" id="watt" min="0" step="5"><span class="u">W</span></div>
             </div>
           </div>
+          <div class="frow single">
+            <div class="field">
+              <label><span data-i18n="lblBrand">Marka (opsiyonel)</span></label>
+              <input type="text" id="materialBrand" data-i18n-ph="brandPh" placeholder="örn. eSUN, Polymaker, Prusament, Bambu Lab">
+            </div>
+          </div>
         </div>
 
         <div id="resinFields" hidden>
+          <div class="frow">
+            <div class="field">
+              <label><span data-i18n="lblResinPrinter">Reçine yazıcısı</span></label>
+              <select id="resinPrinter"></select>
+            </div>
+            <div class="field">
+              <label><span data-i18n="lblResinMaterial">Reçine türü</span></label>
+              <select id="resinMaterial"></select>
+            </div>
+          </div>
           <div class="frow">
             <div class="field">
               <label><span data-i18n="lblResinVol">Reçine hacmi</span> <span class="hint" id="volAutoHint"></span></label>
@@ -123,13 +140,20 @@
           </div>
           <div class="frow">
             <div class="field">
-              <label><span data-i18n="lblResinWatt">Yazıcı + UV küvet gücü</span></label>
+              <label><span data-i18n="lblResinWatt">Yazıcı + UV küvet gücü</span> <span class="hint" id="resinWattAutoHint"></span></label>
               <div class="unit-wrap"><input type="number" id="resinWatt" min="0" step="5" value="70"><span class="u">W</span></div>
             </div>
             <div class="field">
               <label><span data-i18n="lblConsumables">Sarf malzeme (IPA, eldiven vb.)</span></label>
               <div class="unit-wrap"><input type="number" id="resinConsumables" min="0" step="1" value="15"><span class="u mono" id="consUnit">₺</span></div>
             </div>
+          </div>
+        </div>
+
+        <div class="frow single">
+          <div class="field">
+            <label><span data-i18n="lblColor">Renk</span> <span class="hint mono" id="colorLabel"></span></label>
+            <div class="swatchrow" id="colorRow"></div>
           </div>
         </div>
 
@@ -273,7 +297,7 @@
 
 <footer class="site-footer" style="margin-top:0;">
   <div class="footer-bottom" style="border-top:1px solid var(--border);">
-    <span>© <span id="yr"></span> Umt3D Studio</span>
+    <span>© <span id="yr"></span> Umt3D Studio — Utku Mert Torun · <a href="https://instagram.com/utku_mrt_2.1.1" target="_blank" rel="noopener">@utku_mrt_2.1.1</a></span>
     <span>umt3dstudio.com</span>
   </div>
 </footer>
