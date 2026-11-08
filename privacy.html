@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Gizlilik — Umt3D Studio</title>
+<link rel="icon" href="favicon.ico">
+<link rel="stylesheet" href="css/site.css">
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="brand">
+      <div class="mark">3D</div>
+      <div class="brandname">Umt3D Studio<small>FİYATLANDIRMA ARACI</small></div>
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html">Ana Sayfa</a>
+      <a href="calculator.html">Hesaplayıcı</a>
+      <a href="privacy.html">Gizlilik</a>
+    </div>
+    <div class="nav-right">
+      <div class="theme-toggle">
+        <button data-theme="light" title="Açık tema">☀</button>
+        <button data-theme="auto" title="Sistem">●</button>
+        <button data-theme="dark" title="Koyu tema">☾</button>
+      </div>
+      <button class="nav-burger" aria-label="Menü" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+</header>
+
+<main class="content-page">
+  <h1>Gizlilik</h1>
+  <div class="updated">Son güncelleme: 2026</div>
+
+  <p>Umt3D Studio hesaplayıcısı tamamen tarayıcında çalışır. Yüklediğin G-code dosyaları,
+  girdiğin fiyatlar, elektrik birim bedeli, işçilik ve kâr marjı gibi bilgiler hiçbir sunucuya
+  gönderilmez; bu sayfa dışına çıkmaz.</p>
+
+  <h2>Tarayıcı belleği (localStorage)</h2>
+  <p>Tekrar girmen gerekmesin diye bazı ayarların (elektrik fiyatı, işçilik ücreti, kâr marjı,
+  seçtiğin dil/döviz) tarayıcının yerel belleğinde saklanır. Bu bilgiler yalnızca kendi
+  cihazında kalır; başka bir cihaza veya başka bir kullanıcıya aktarılmaz. İstediğin zaman
+  tarayıcı ayarlarından site verilerini temizleyerek bu kaydı silebilirsin.</p>
+
+  <h2>Dosya yükleme</h2>
+  <p>Hesaplayıcıya sürüklediğin .gcode dosyası hiçbir şekilde yüklenmez/iletilmez; dosya
+  yalnızca tarayıcı içinde okunur ve analiz edilir.</p>
+
+  <h2>Çerezler ve takip</h2>
+  <p>Bu site reklam veya analiz amaçlı çerez kullanmaz, hiçbir üçüncü tarafla veri paylaşmaz.</p>
+
+  <h2>İletişim</h2>
+  <p>Sorularınız için umt3dstudio.com üzerinden bize ulaşabilirsiniz.</p>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-bottom" style="border-top:none;">
+    <span>© <span id="yr"></span> Umt3D Studio</span>
+    <span>umt3dstudio.com</span>
+  </div>
+</footer>
+
+<script>document.getElementById("yr").textContent = new Date().getFullYear();</script>
+<script src="js/site.js"></script>
+</body>
+</html>

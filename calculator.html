@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hesaplayıcı — Umt3D Studio</title>
+<meta name="description" content="G-code dosyandan otomatik ağırlık ve süre okuyan, malzeme ve yazıcı kütüphanesiyle 3D baskı maliyetini ve müşteri fiyatını hesaplayan ücretsiz araç.">
+<link rel="icon" href="favicon.ico">
+<link rel="stylesheet" href="css/site.css">
+<link rel="stylesheet" href="css/calculator.css">
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="brand">
+      <div class="mark">3D</div>
+      <div class="brandname">Umt3D Studio<small>FİYATLANDIRMA ARACI</small></div>
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html">Ana Sayfa</a>
+      <a href="calculator.html">Hesaplayıcı</a>
+      <a href="privacy.html">Gizlilik</a>
+    </div>
+    <div class="nav-right">
+      <div class="theme-toggle">
+        <button data-theme="light" title="Açık tema">☀</button>
+        <button data-theme="auto" title="Sistem">●</button>
+        <button data-theme="dark" title="Koyu tema">☾</button>
+      </div>
+      <button class="nav-burger" aria-label="Menü" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+</header>
+
+<div class="calc-wrap">
+
+  <div class="localebar">
+    <div class="seg" id="langSeg">
+      <button data-lang="tr" class="active">TR</button>
+      <button data-lang="en">EN</button>
+    </div>
+    <div class="seg" id="curSeg">
+      <button data-cur="TRY" class="active">₺ TRY</button>
+      <button data-cur="USD">$ USD</button>
+      <button data-cur="EUR">€ EUR</button>
+    </div>
+  </div>
+
+  <div class="calc-hero">
+    <span class="eyebrow" data-i18n="eyebrow">OTOMATİK FİYATLANDIRMA</span>
+    <h1 data-i18n="heroTitle">Baskıyı yükle, fiyatı al.</h1>
+    <p data-i18n="heroSub">G-code dosyanı sürükle, malzeme ve yazıcını seç — gram, süre ve watt bilgisini sen yazmana gerek kalmadan dolduralım. Geri kalan ayarları bir kez gir, tarayıcın hatırlasın.</p>
+  </div>
+
+  <div class="grid">
+    <div class="left">
+
+      <div class="card">
+        <h2><span class="stepno">1</span> <span data-i18n="h1t">Dosya ile otomatik doldur</span></h2>
+        <p class="sub" data-i18n="h1s">Cura, PrusaSlicer, OrcaSlicer, Bambu Studio veya Simplify3D çıktısı .gcode / .bgcode / .gco dosyaları desteklenir.</p>
+        <div class="drop" id="dropzone">
+          <div class="ic">📄</div>
+          <div class="t1" data-i18n="dropT1">G-code dosyasını buraya bırak</div>
+          <div class="t2" data-i18n="dropT2">ya da tıklayıp seç — hiçbir şey sunucuya yüklenmez, her şey tarayıcında kalır</div>
+          <input type="file" id="fileInput" accept=".gcode,.gco,.g,.bgcode,.txt">
+        </div>
+        <div id="parseResult"></div>
+      </div>
+
+      <div class="card">
+        <h2><span class="stepno">2</span> <span data-i18n="h2t">Baskı türü, malzeme, yazıcı</span></h2>
+        <p class="sub" data-i18n="h2s">Yoğunluk ve güç tüketimi otomatik gelir, istersen üzerine yaz.</p>
+
+        <div class="modetabs">
+          <button class="active" data-mode="fdm" data-i18n="modeFdm">FDM (Filament)</button>
+          <button data-mode="resin" data-i18n="modeResin">Reçine (Resin)</button>
+        </div>
+
+        <div id="fdmFields">
+          <div class="frow">
+            <div class="field">
+              <label><span data-i18n="lblMaterial">Malzeme</span></label>
+              <select id="material"></select>
+            </div>
+            <div class="field">
+              <label><span data-i18n="lblPrinter">Yazıcı</span></label>
+              <select id="printer"></select>
+            </div>
+          </div>
+          <div class="frow">
+            <div class="field">
+              <label><span data-i18n="lblWeight">Filament ağırlığı</span> <span class="hint" id="weightAutoHint"></span></label>
+              <div class="unit-wrap"><input type="number" id="weight" min="0" step="0.1" placeholder="0"><span class="u">g</span></div>
+            </div>
+            <div class="field">
+              <label><span data-i18n="lblDensity">Yoğunluk</span></label>
+              <div class="unit-wrap"><input type="number" id="density" min="0" step="0.01"><span class="u">g/cm³</span></div>
+            </div>
+          </div>
+          <div class="frow">
+            <div class="field">
+              <label><span data-i18n="lblFilPrice">Filament fiyatı</span></label>
+              <div class="unit-wrap"><input type="number" id="filPrice" min="0" step="1"><span class="u mono" id="filPriceUnit">₺/kg</span></div>
+            </div>
+            <div class="field">
+              <label><span data-i18n="lblWatt">Yazıcı gücü</span> <span class="hint" id="wattAutoHint"></span></label>
+              <div class="unit-wrap"><input type="number" id="watt" min="0" step="5"><span class="u">W</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="resinFields" hidden>
+          <div class="frow">
+            <div class="field">
+              <label><span data-i18n="lblResinVol">Reçine hacmi</span> <span class="hint" id="volAutoHint"></span></label>
+              <div class="unit-wrap"><input type="number" id="resinVol" min="0" step="1"><span class="u">ml</span></div>
+            </div>
+            <div class="field">
+              <label><span data-i18n="lblResinPrice">Reçine fiyatı</span></label>
+              <div class="unit-wrap"><input type="number" id="resinPrice" min="0" step="1"><span class="u mono" id="resinPriceUnit">₺/L</span></div>
+            </div>
+          </div>
+          <div class="frow">
+            <div class="field">
+              <label><span data-i18n="lblResinWatt">Yazıcı + UV küvet gücü</span></label>
+              <div class="unit-wrap"><input type="number" id="resinWatt" min="0" step="5" value="70"><span class="u">W</span></div>
+            </div>
+            <div class="field">
+              <label><span data-i18n="lblConsumables">Sarf malzeme (IPA, eldiven vb.)</span></label>
+              <div class="unit-wrap"><input type="number" id="resinConsumables" min="0" step="1" value="15"><span class="u mono" id="consUnit">₺</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="frow">
+          <div class="field">
+            <label><span data-i18n="lblTime">Baskı süresi</span> <span class="hint" id="timeAutoHint"></span></label>
+            <div style="display:flex; gap:6px;">
+              <div class="unit-wrap" style="flex:1;"><input type="number" id="hours" min="0" step="1" placeholder="0"><span class="u" data-i18n="unitH">sa</span></div>
+              <div class="unit-wrap" style="flex:1;"><input type="number" id="minutes" min="0" max="59" step="1" placeholder="0"><span class="u" data-i18n="unitM">dk</span></div>
+            </div>
+          </div>
+          <div class="field">
+            <label><span data-i18n="lblElec">Elektrik birim fiyatı</span></label>
+            <div class="unit-wrap"><input type="number" id="elecPrice" min="0" step="0.1" placeholder="2.5"><span class="u mono" id="elecUnit">₺/kWh</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2><span class="stepno">3</span> <span data-i18n="h3t">İşletme maliyetleri</span></h2>
+        <p class="sub" data-i18n="h3s">Bu bölüm tarayıcında saklanır, bir daha girmen gerekmez.</p>
+        <div class="frow">
+          <div class="field">
+            <label><span data-i18n="lblFail">Fire / başarısız baskı payı</span></label>
+            <div class="unit-wrap"><input type="number" id="failRate" min="0" max="100" step="1" value="8"><span class="u">%</span></div>
+          </div>
+          <div class="field">
+            <label><span data-i18n="lblPost">Son işlem / işçilik maliyeti</span></label>
+            <div class="unit-wrap"><input type="number" id="postProcess" min="0" step="1" value="0"><span class="u mono" id="postUnit">₺</span></div>
+          </div>
+        </div>
+        <div class="frow">
+          <div class="field">
+            <label><span data-i18n="lblLaborRate">Saatlik emek ücreti</span></label>
+            <div class="unit-wrap"><input type="number" id="laborRate" min="0" step="10" value="0"><span class="u mono" id="laborUnit">₺/sa</span></div>
+          </div>
+          <div class="field">
+            <label><span data-i18n="lblLaborTime">Harcanan emek süresi</span></label>
+            <div class="unit-wrap"><input type="number" id="laborTime" min="0" step="5" value="0"><span class="u" data-i18n="unitMin">dk</span></div>
+          </div>
+        </div>
+
+        <div class="toggle-row">
+          <div>
+            <div class="tlabel" data-i18n="depToggle">Yazıcı amortismanı ekle</div>
+            <div class="tsub" data-i18n="depToggleSub">Makine aşınma payını maliyete dahil et</div>
+          </div>
+          <label class="switch"><input type="checkbox" id="depToggle"><span class="track"></span><span class="knob"></span></label>
+        </div>
+        <div class="frow" id="depFields" hidden>
+          <div class="field">
+            <label><span data-i18n="lblPrinterCost">Yazıcı maliyeti</span></label>
+            <div class="unit-wrap"><input type="number" id="printerCost" min="0" step="100" value="15000"><span class="u mono" id="printerCostUnit">₺</span></div>
+          </div>
+          <div class="field">
+            <label><span data-i18n="lblLifetime">Beklenen ömür</span></label>
+            <div class="unit-wrap"><input type="number" id="lifetimeHours" min="1" step="100" value="4000"><span class="u" data-i18n="unitHours">saat</span></div>
+          </div>
+        </div>
+
+        <hr class="div">
+        <div class="frow">
+          <div class="field">
+            <label><span data-i18n="lblMargin">Kâr marjı</span></label>
+            <div class="unit-wrap"><input type="number" id="margin" min="0" step="5" value="35"><span class="u">%</span></div>
+          </div>
+          <div class="field">
+            <label><span data-i18n="lblFx">Döviz kuru (₺ başına)</span></label>
+            <div class="unit-wrap"><input type="number" id="fxRate" min="0" step="0.01" placeholder="—"><span class="u mono" id="fxUnit">USD/₺</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="right">
+      <div class="ticket">
+        <div class="card" id="ticketCard">
+          <div class="head">
+            <div>
+              <h2 style="margin-bottom:2px;" data-i18n="ticketTitle">Maliyet Fişi</h2>
+              <div class="tag mono" id="ticketTag">—</div>
+            </div>
+            <div class="badgewrap" id="modeBadge"></div>
+          </div>
+
+          <div id="lines"></div>
+
+          <div id="warnBox"></div>
+
+          <button class="btn btn-primary" id="quoteBtn" style="margin-top:14px;" data-i18n="btnQuote">Müşteri Teklifi Oluştur</button>
+          <div class="saved-pill" id="savedPill">✓ <span data-i18n="savedMsg">Ayarların kaydedildi</span></div>
+        </div>
+
+        <div class="card" id="quoteSection" hidden>
+          <h2 data-i18n="quoteHeadTitle">Teklif Bilgileri</h2>
+          <div class="frow single">
+            <div class="field">
+              <label data-i18n="lblBizName">İşletme adı</label>
+              <input type="text" id="bizName" placeholder="Umt3D Studio">
+            </div>
+          </div>
+          <div class="frow">
+            <div class="field">
+              <label data-i18n="lblCustName">Müşteri adı</label>
+              <input type="text" id="custName" placeholder="—">
+            </div>
+            <div class="field">
+              <label data-i18n="lblPartName">Parça / proje adı</label>
+              <input type="text" id="partName" placeholder="—">
+            </div>
+          </div>
+
+          <hr class="div">
+
+          <div class="quote-card" id="quoteCard">
+            <div class="quote-top">
+              <div>
+                <div class="biz" id="qBiz">Umt3D Studio</div>
+                <div class="mono" style="font-size:11px; color:var(--muted); margin-top:2px;" id="qCust">—</div>
+              </div>
+              <div class="meta">
+                <div id="qDate">—</div>
+                <div id="qNo">—</div>
+              </div>
+            </div>
+            <div id="qPart" style="font-weight:700; margin-bottom:10px; font-size:14px;">—</div>
+            <div id="qRows"></div>
+          </div>
+
+          <div class="copybar">
+            <button class="btn btn-ghost" id="copyBtn" data-i18n="btnCopy">📋 Panoya Kopyala</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="calc-note" data-i18n="footer">Tüm hesaplamalar tarayıcında yapılır, hiçbir veri sunucuya gönderilmez.</div>
+</div>
+
+<footer class="site-footer" style="margin-top:0;">
+  <div class="footer-bottom" style="border-top:1px solid var(--border);">
+    <span>© <span id="yr"></span> Umt3D Studio</span>
+    <span>umt3dstudio.com</span>
+  </div>
+</footer>
+
+<script>document.getElementById("yr").textContent = new Date().getFullYear();</script>
+<script src="js/site.js"></script>
+<script src="js/calculator.js"></script>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Umt3D Studio — 3D Baskı Fiyat Hesaplayıcı</title>
+<meta name="description" content="Umt3D Studio: G-code dosyandan otomatik okuyan, malzeme ve yazıcı kütüphanesiyle saniyeler içinde gerçek maliyeti ve müşteri fiyatını çıkaran ücretsiz 3D baskı hesaplayıcısı.">
+<link rel="icon" href="favicon.ico">
+<link rel="stylesheet" href="css/site.css">
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="brand">
+      <div class="mark">3D</div>
+      <div class="brandname">Umt3D Studio<small>FİYATLANDIRMA ARACI</small></div>
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html">Ana Sayfa</a>
+      <a href="calculator.html">Hesaplayıcı</a>
+      <a href="privacy.html">Gizlilik</a>
+    </div>
+    <div class="nav-right">
+      <div class="theme-toggle">
+        <button data-theme="light" title="Açık tema">☀</button>
+        <button data-theme="auto" title="Sistem">●</button>
+        <button data-theme="dark" title="Koyu tema">☾</button>
+      </div>
+      <button class="nav-burger" aria-label="Menü" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <section class="hero-section">
+    <span class="eyebrow">ÜCRETSİZ · TARAYICINDA ÇALIŞIR</span>
+    <h1>3D baskının <span class="accenttxt">gerçek maliyetini</span> saniyeler içinde öğren</h1>
+    <p class="lede">
+      G-code dosyanı sürükle bırak — filament gramajı ve baskı süresi otomatik gelsin.
+      Malzeme ve yazıcını seç, elektrik + işçilik + kâr marjını ekle; müşterine
+      göndereceğin fiyatı anında gör.
+    </p>
+    <div class="hero-cta">
+      <a href="calculator.html" class="btn btn-primary">🚀 Hesaplamaya Başla</a>
+      <a href="#nasil" class="btn btn-ghost">Nasıl çalışır?</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="num mono">35+</div><div class="lbl">Yazıcı modeli</div></div>
+      <div class="stat"><div class="num mono">13</div><div class="lbl">Malzeme profili</div></div>
+      <div class="stat"><div class="num mono">0₺</div><div class="lbl">Kurulum / abonelik</div></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head reveal">
+      <h2>Neden Umt3D Studio?</h2>
+      <p>Bir masaüstü yazıcı atölyesinin ihtiyaç duyduğu her şey tek ekranda.</p>
+    </div>
+    <div class="feature-grid">
+      <div class="feature-card reveal">
+        <div class="ic">📄</div>
+        <h3>G-code'dan otomatik okuma</h3>
+        <p>Cura, PrusaSlicer, OrcaSlicer, Bambu Studio ve Simplify3D çıktılarını tanır; gram ve süreyi senin yerine okur.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="ic">🖨️</div>
+        <h3>Tüm yaygın yazıcılarla uyumlu</h3>
+        <p>Creality, Prusa, Bambu Lab, Anycubic, Elegoo, Qidi, Flashforge, Sovol ve Artillery için hazır güç profilleri.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="ic">💾</div>
+        <h3>Ayarlarını unutmaz</h3>
+        <p>Elektrik fiyatın, işçilik ücretin, kâr marjın bir kez girilir; tarayıcın hatırlar, bir daha sormayız.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="ic">🧪</div>
+        <h3>FDM ve Reçine, ikisi de var</h3>
+        <p>Filament ağırlığına göre ya da reçine hacmine (ml) göre; sarf malzemeleri de hesaba dahil.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="ic">🧾</div>
+        <h3>Müşteriye hazır teklif</h3>
+        <p>İşletme ve müşteri bilgisini gir, tertemiz bir fiyat teklifi oluştur, tek tıkla panoya kopyala.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="ic">🌍</div>
+        <h3>Çoklu dil ve döviz</h3>
+        <p>Türkçe / İngilizce arayüz, TL / USD / EUR arasında anında dönüşüm.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="nasil">
+    <div class="section-head reveal">
+      <h2>Nasıl çalışır?</h2>
+      <p>Üç adımda, elinde fiyat teklifi hazır olur.</p>
+    </div>
+    <div class="steps">
+      <div class="step reveal">
+        <div class="n">1</div>
+        <h3>Dosyanı yükle</h3>
+        <p>Slicer programından çıkan .gcode dosyasını sürükle bırak; hiçbir şey sunucuya gitmez, her şey tarayıcında kalır.</p>
+      </div>
+      <div class="step reveal">
+        <div class="n">2</div>
+        <h3>Malzeme ve maliyetleri gir</h3>
+        <p>Malzeme ve yazıcını seç, elektrik birim fiyatını ve kâr marjını ayarla — bu bilgiler bir dahaki sefere hazır bekler.</p>
+      </div>
+      <div class="step reveal">
+        <div class="n">3</div>
+        <h3>Teklifi paylaş</h3>
+        <p>Maliyet fişini anında gör, istersen müşteri adıyla teklif oluştur ve panoya kopyala.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="cta-band reveal">
+    <h2>Fiyat vermeden önce bir kez hesapla.</h2>
+    <p>Ücretsiz, kayıt gerektirmez, hiçbir verin sunucuya gönderilmez.</p>
+    <a href="calculator.html" class="btn btn-primary">Hesaplayıcıyı Aç</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div>
+      <div class="fbrand">
+        <div class="mark" style="width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;">3D</div>
+        <strong style="font-family:'Syne',sans-serif;">Umt3D Studio</strong>
+      </div>
+      <p>3D baskı atölyeleri ve hobi yazıcıları için ücretsiz, tarayıcı tabanlı maliyet ve fiyat teklifi hesaplayıcısı.</p>
+    </div>
+    <div>
+      <h4>Site</h4>
+      <div class="footer-links">
+        <a href="index.html">Ana Sayfa</a>
+        <a href="calculator.html">Hesaplayıcı</a>
+        <a href="privacy.html">Gizlilik</a>
+      </div>
+    </div>
+    <div>
+      <h4>Bilgi</h4>
+      <div class="footer-links">
+        <span style="color:var(--muted); font-size:13.5px;">Tüm hesaplamalar cihazında çalışır.</span>
+        <span style="color:var(--muted); font-size:13.5px;">Veri tabanı veya sunucu kullanılmaz.</span>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© <span id="yr"></span> Umt3D Studio</span>
+    <span>umt3dstudio.com</span>
+  </div>
+</footer>
+
+<script>document.getElementById("yr").textContent = new Date().getFullYear();</script>
+<script src="js/site.js"></script>
+</body>
+</html>
