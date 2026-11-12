@@ -74,5 +74,11 @@
     initNav();
     initReveal();
     markActiveNav();
+    /* Trigger page-load entrance animations defined in site.css */
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        document.body.classList.add("loaded");
+      });
+    });
   });
 })();
