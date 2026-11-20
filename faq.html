@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SSS ve İpuçları — Umt3D Studio</title>
+<meta name="description" content="G-code nasıl alınır, filament ve elektrik maliyeti nasıl hesaplanır, fiyat verirken nelere dikkat edilir? Umt3D Studio SSS ve ipuçları.">
+<meta name="author" content="Utku Mert Torun">
+<meta name="theme-color" content="#070B1F">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="favicon.ico">
+<link rel="stylesheet" href="css/site.css">
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="brand">
+      <div class="mark">3D</div>
+      <div class="brandname">Umt3D Studio<small>FİYATLANDIRMA ARACI</small></div>
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html">Ana Sayfa</a>
+      <a href="calculator.html">Hesaplayıcı</a>
+      <a href="faq.html">SSS</a>
+      <a href="privacy.html">Gizlilik</a>
+    </div>
+    <div class="nav-right">
+      <div class="theme-toggle">
+        <button data-theme="light" title="Açık tema">☀</button>
+        <button data-theme="auto" title="Sistem">●</button>
+        <button data-theme="dark" title="Koyu tema">☾</button>
+      </div>
+      <button class="nav-burger" aria-label="Menü" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+</header>
+
+<main class="content-page">
+  <span class="eyebrow">SSS · İPUÇLARI</span>
+  <h1>Sık sorulan sorular</h1>
+  <p class="updated">Fiyatlar ve malzeme değerleri her atölyeye göre değişir; burada yalnızca yöntemleri anlatıyoruz.</p>
+
+  <h2>G-code dosyasını nasıl alırım?</h2>
+  <p>Modelini slicer programında (PrusaSlicer, OrcaSlicer, Bambu Studio, Cura, Simplify3D vb.) dilimle ve çıkan <strong>.gcode</strong> dosyasını kaydet. Dosyanın sonundaki yorum satırlarında filament gramajı ve baskı süresi yazılıdır; hesaplayıcı bunları otomatik okur.</p>
+
+  <h2>Gramaj ve süre dosyada yoksa ne olur?</h2>
+  <p>Bazı slicer ayarlarında gramaj yazılmaz. Bu durumda hesaplayıcı filament uzunluğundan (1,75 mm çap ve seçtiğin malzemenin yoğunluğu) gramajı tahmin eder. Tahmin, gerçek değere yakın olsa da kesin değildir; mümkünse slicer'da gramajı açıkça etkinleştir.</p>
+
+  <h2>Fiyat nasıl hesaplanıyor?</h2>
+  <ul>
+    <li><strong>Malzeme:</strong> gram × kilogram fiyatı (reçinede ml × litre fiyatı, artı sarf malzemeler).</li>
+    <li><strong>Elektrik:</strong> yazıcının watt değeri × baskı saati × kWh birim fiyatı.</li>
+    <li><strong>Başarısızlık payı:</strong> yüzde olarak eklenir; ilk baskılarda ve karmaşık modellerde daha yüksek tut.</li>
+    <li><strong>İşçilik:</strong> dakika × saatlik ücret (modelleme, kontrol, paketleme dahil).</li>
+    <li><strong>Amortisman (isteğe bağlı):</strong> yazıcı bedeli ÷ ömür saati × baskı saati.</li>
+    <li><strong>Kâr marjı:</strong> toplam maliyetin üzerine eklenen yüzde.</li>
+  </ul>
+
+  <h2>Fiyat verirken dikkat edilecekler</h2>
+  <ul>
+    <li>Elektrik birim fiyatını güncel faturandan al; yıl içinde değişebilir.</li>
+    <li>Filament fiyatına sarf (nozul, yapıştırıcı, levha) payı eklemeyi unutma.</li>
+    <li>Destek malzemesi ve ayrıştırma süresi çoğu zaman gramajdan fazla emek ister; işçilik kalemine ekle.</li>
+    <li>Küçük siparişlerde bir taban (minimum) fiyat belirlemek, sabit giderleri karşılar.</li>
+    <li>Teklifi müşteriye vermeden önce tek bir baskıyla gerçek gramajı kontrol et.</li>
+  </ul>
+
+  <h2>Reçine baskıda dikkat edilecekler</h2>
+  <ul>
+    <li>Reçine cildi tahriş edebilir; nitril eldiven ve iyi havalandırma kullan.</li>
+    <li>Yıkama için IPA ve son kürleme süresi ek sarf ve elektrik demektir; hesaba kat.</li>
+    <li>Reçine hacmini ml olarak model dosyasından veya slicer'dan alabilirsin.</li>
+  </ul>
+
+  <h2>Verilerim nerede tutuluyor?</h2>
+  <p>Her şey tarayıcında çalışır. Girdiğin ayarlar yalnızca bu cihazdaki tarayıcıda (localStorage) saklanır; sunucuya bir şey gönderilmez. Ayrıntılar için <a href="privacy.html">Gizlilik</a> sayfasına bak.</p>
+
+  <p style="margin-top:32px;"><a href="calculator.html" class="btn btn-primary">Hesaplayıcıyı Aç</a></p>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div>
+      <div class="fbrand">
+        <div class="mark" style="width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;">3D</div>
+        <strong style="font-family:'Syne',sans-serif;">Umt3D Studio</strong>
+      </div>
+      <p>3D baskı atölyeleri ve hobi yazıcıları için ücretsiz, tarayıcı tabanlı maliyet ve fiyat teklifi hesaplayıcısı.</p>
+    </div>
+    <div>
+      <h4>Site</h4>
+      <div class="footer-links">
+        <a href="index.html">Ana Sayfa</a>
+        <a href="calculator.html">Hesaplayıcı</a>
+        <a href="faq.html">SSS</a>
+        <a href="privacy.html">Gizlilik</a>
+      </div>
+    </div>
+    <div>
+      <h4>Geliştirici</h4>
+      <div class="footer-links">
+        <span style="color:var(--fg); font-weight:700; font-size:13.5px;">Utku Mert Torun</span>
+        <a href="https://instagram.com/utku_mrt_2.1.1" target="_blank" rel="noopener">📷 @utku_mrt_2.1.1</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© <span id="yr"></span> Umt3D Studio — Utku Mert Torun</span>
+    <span>umt3dstudio.com</span>
+  </div>
+</footer>
+
+<script>document.getElementById("yr").textContent = new Date().getFullYear();</script>
+<script src="js/site.js"></script>
+</body>
+</html>

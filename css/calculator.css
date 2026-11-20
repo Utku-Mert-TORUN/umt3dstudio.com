@@ -192,3 +192,39 @@ hr.div{border:none; border-top:1px solid var(--border); margin:14px 0;}
 
 .calc-note{margin-top:28px; text-align:center; color:var(--muted); font-size:11.5px; font-family:'Space Mono',monospace;}
 .visually-hidden{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);}
+
+/* ---------------- cam (glass) kartlar ve mobil düzen ---------------- */
+.card{
+  background:var(--surface);
+  border-color:var(--border);
+  -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(1.2);
+  backdrop-filter:blur(var(--glass-blur)) saturate(1.2);
+}
+@media (max-width:860px){ .ticket{position:static;} }
+
+/* ---------------- yeni araçlar: teklif araçları, geçmiş, karşılaştırma ---------------- */
+.tool-row{ display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+.tool-row .btn{ flex:1 1 auto; padding:10px 14px; font-size:13px; }
+.cmp{ margin-top:14px; border-top:1px solid var(--border); padding-top:12px; }
+.cmp summary{ cursor:pointer; font-weight:700; font-size:13.5px; color:var(--muted); }
+.cmp-row{ display:flex; justify-content:space-between; gap:10px; padding:7px 2px; border-bottom:1px dashed var(--border); font-size:13.5px; }
+.cmp-row:last-child{ border-bottom:none; }
+.hist-row{ display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--border); flex-wrap:wrap; }
+.hist-row:last-child{ border-bottom:none; }
+.hist-info{ flex:1 1 180px; min-width:0; display:flex; flex-direction:column; gap:2px; }
+.hist-info strong{ font-size:14px; }
+.hist-info span{ font-size:11px; color:var(--muted); }
+.hist-amt{ font-weight:700; font-size:14px; }
+.hist-btn{ padding:8px 12px; font-size:12.5px; }
+.muted-note{ color:var(--muted); font-size:13.5px; }
+
+/* ---------------- yazdır / PDF: yalnızca teklif kartı ---------------- */
+@media print{
+  body, body *{ visibility:hidden !important; }
+  body{ background:#fff !important; background-image:none !important; }
+  #quoteSection, #quoteSection *{ visibility:visible !important; }
+  #quoteSection{ position:absolute; left:0; top:0; width:100%; box-shadow:none !important; border:none !important; background:#fff !important; color:#000 !important; }
+  #quoteSection .copybar{ display:none !important; }
+  #quoteSection .field input, #quoteSection input{ border:none !important; background:transparent !important; }
+  .site-header, .site-footer, .ticket, #historyCard, .calc-note, .localebar{ display:none !important; }
+}

@@ -5,6 +5,11 @@
 /* ---------------- i18n ---------------- */
 var STR = {
   tr:{
+    lblTpl:"Teklif şablonu", tplBireysel:"Bireysel (%35 kâr)", tplKurumsal:"Kurumsal (%20 kâr)", tplAcele:"Acele teslimat (%50 kâr)",
+    lblMinPrice:"Taban (minimum) fiyat", lblVat:"KDV oranı", minNote:"Taban fiyat uygulandı (hesaplanan tutar taban fiyatın altındaydı).",
+    rowVat:"KDV", rowGrand:"KDV dahil toplam", btnHistSave:"Geçmişe kaydet", btnShare:"🔗 Bağlantıyı kopyala", btnPrint:"🖨️ PDF / Yazdır",
+    cmpTitle:"Malzeme karşılaştırması (varsayılan fiyatlarla)", histTitle:"Geçmiş hesaplamalar",
+    histEmpty:"Henüz kayıt yok. Bir hesaplamayı “Geçmişe kaydet” ile sakla.", histRestore:"Geri yükle", shareCopied:"Kopyalandı",
     eyebrow:"OTOMATİK FİYATLANDIRMA",
     heroTitle:"Baskıyı yükle, fiyatı al.",
     heroSub:"G-code dosyanı sürükle, malzeme ve yazıcını seç — gram, süre ve watt bilgisini sen yazmana gerek kalmadan dolduralım. Geri kalan ayarları bir kez gir, tarayıcın hatırlasın.",
@@ -38,6 +43,11 @@ var STR = {
     dateLocale:"tr-TR"
   },
   en:{
+    lblTpl:"Quote template", tplBireysel:"Personal (35% margin)", tplKurumsal:"Business (20% margin)", tplAcele:"Rush delivery (50% margin)",
+    lblMinPrice:"Minimum price", lblVat:"VAT rate", minNote:"Minimum price applied (calculated amount was below it).",
+    rowVat:"VAT", rowGrand:"Total incl. VAT", btnHistSave:"Save to history", btnShare:"🔗 Copy share link", btnPrint:"🖨️ PDF / Print",
+    cmpTitle:"Material comparison (default prices)", histTitle:"Calculation history",
+    histEmpty:"No entries yet. Save a calculation with “Save to history”.", histRestore:"Restore", shareCopied:"Copied",
     eyebrow:"AUTOMATED PRICING",
     heroTitle:"Upload the print, get the price.",
     heroSub:"Drop your G-code, pick your material and printer — we fill in weight, time and wattage so you don't have to type them. Set the rest once and your browser remembers it.",
@@ -450,7 +460,7 @@ var LANGS = [
   {code:"hi", native:"हिन्दी"}
 ];
 var lang = "tr";
-function t(k){ return (STR[lang] && STR[lang][k]) || k; }
+function t(k){ return (STR[lang] && STR[lang][k]) || (STR.en && STR.en[k]) || (STR.tr && STR.tr[k]) || k; }
 function applyI18n(){
   document.querySelectorAll("[data-i18n]").forEach(function(el){
     var k = el.getAttribute("data-i18n");
@@ -480,6 +490,7 @@ function saveProfile(){
       lang: lang, currency: currency,
       elecPrice: $("elecPrice").value, filPrice: $("filPrice").value,
       failRate: $("failRate").value, postProcess: $("postProcess").value,
+      minPrice: $("minPrice").value, vatRate: $("vatRate").value,
       laborRate: $("laborRate").value, margin: $("margin").value,
       depToggle: $("depToggle").checked, printerCost: $("printerCost").value,
       lifetimeHours: $("lifetimeHours").value, fxRates: fxRates,
@@ -1172,6 +1183,15 @@ function render(){
   var marginPct = num("margin") / 100;
   var marginTRY = subtotalTRY * marginPct;
   var totalTRY = subtotalTRY + marginTRY;
+  var minTRY = num("minPrice");
+  var minApplied = false;
+  if(minTRY > 0 && totalTRY < minTRY){
+    totalTRY = minTRY;
+    marginTRY = totalTRY - subtotalTRY;
+    minApplied = true;
+  }
+  var vatTRY = totalTRY * (num("vatRate") / 100);
+  var grandTRY = totalTRY + vatTRY;
 
   function addLine(labelKey, amountTRY, opts){
     opts = opts || {};
@@ -1196,7 +1216,19 @@ function render(){
   if(depTRY > 0) fxOk = addLine("rowDep", depTRY) && fxOk;
   fxOk = addLine("rowSubtotal", subtotalTRY, {sub:true}) && fxOk;
   fxOk = addLine("rowMargin", marginTRY, {sub:true}) && fxOk;
-  fxOk = addLine("rowTotal", totalTRY, {sum:true}) && fxOk;
+  if(vatTRY > 0){
+    fxOk = addLine("rowTotal", totalTRY, {sub:true}) && fxOk;
+    fxOk = addLine("rowVat", vatTRY, {sub:true}) && fxOk;
+    fxOk = addLine("rowGrand", grandTRY, {sum:true}) && fxOk;
+  } else {
+    fxOk = addLine("rowTotal", totalTRY, {sum:true}) && fxOk;
+  }
+  if(minApplied){
+    var mn = document.createElement("div");
+    mn.className = "warnline";
+    mn.textContent = "ℹ " + t("minNote");
+    warnBox.appendChild(mn);
+  }
 
   if(!fxOk){
     var w = document.createElement("div");
@@ -1209,8 +1241,10 @@ function render(){
 
   window.__lastCalc = {
     materialCostTRY:materialCostTRY, elecCostTRY:elecCostTRY, failCostTRY:failCostTRY,
-    postTotalTRY:postTotalTRY, depTRY:depTRY, subtotalTRY:subtotalTRY, marginTRY:marginTRY, totalTRY:totalTRY
+    postTotalTRY:postTotalTRY, depTRY:depTRY, subtotalTRY:subtotalTRY, marginTRY:marginTRY, totalTRY:totalTRY,
+    vatTRY:vatTRY, grandTRY:grandTRY, minApplied:minApplied
   };
+  renderComparison();
   updateQuoteIfOpen();
 }
 
@@ -1250,7 +1284,13 @@ function updateQuoteIfOpen(){
   }
   row(t("rowSubtotal"), calc.subtotalTRY);
   row(t("rowMargin"), calc.marginTRY);
-  row(t("rowTotal"), calc.totalTRY, true);
+  if(calc.vatTRY > 0){
+    row(t("rowTotal"), calc.totalTRY);
+    row(t("rowVat"), calc.vatTRY);
+    row(t("rowGrand"), calc.grandTRY, true);
+  } else {
+    row(t("rowTotal"), calc.totalTRY, true);
+  }
 }
 
 $("copyBtn").addEventListener("click", function(){
@@ -1272,6 +1312,10 @@ $("copyBtn").addEventListener("click", function(){
     t("rowMargin") + ": " + sym + " " + fmt(fx(calc.marginTRY).value,2),
     t("rowTotal") + ": " + sym + " " + fmt(fx(calc.totalTRY).value,2)
   ];
+  if(calc.vatTRY > 0){
+    lines.push(t("rowVat") + ": " + sym + " " + fmt(fx(calc.vatTRY).value,2));
+    lines.push(t("rowGrand") + ": " + sym + " " + fmt(fx(calc.grandTRY).value,2));
+  }
   var curColor = COLORS.find(function(c){ return c.id === selectedColor; });
   var brandVal = $("materialBrand") ? $("materialBrand").value.trim() : "";
   var specLine = (curColor ? (lang==="tr"?"Renk: ":"Color: ") + (lang==="tr"?curColor.tr:curColor.en) : "") +
@@ -1302,6 +1346,171 @@ function fallbackCopy(text){
   }catch(e){ /* ignore */ }
 }
 
+/* ---------------- teklif şablonları ---------------- */
+var TEMPLATES = {bireysel:35, kurumsal:20, acele:50};
+$("tplSelect").addEventListener("change", function(){
+  var v = TEMPLATES[$("tplSelect").value];
+  if(v === undefined) return;
+  $("margin").value = v;
+  render();
+  saveProfile();
+});
+
+/* ---------------- malzeme karşılaştırması (FDM) ---------------- */
+function renderComparison(){
+  var box = $("cmpList");
+  if(!box) return;
+  box.innerHTML = "";
+  if(mode !== "fdm"){ $("cmpBox").hidden = true; return; }
+  $("cmpBox").hidden = false;
+  var grams = num("weight");
+  var sym = symbolFor(currency);
+  MATERIALS.forEach(function(m){
+    var row = document.createElement("div");
+    row.className = "cmp-row";
+    var name = document.createElement("span");
+    name.textContent = lang === "tr" ? m.tr : m.en;
+    var val = document.createElement("span");
+    val.className = "mono";
+    val.textContent = sym + " " + fmt(fx((grams/1000) * m.price).value, 2);
+    row.appendChild(name);
+    row.appendChild(val);
+    box.appendChild(row);
+  });
+}
+
+/* ---------------- ayar anlık görüntüsü (geçmiş + paylaşım bağlantısı) ---------------- */
+var SNAP_IDS = ["weight","density","filPrice","watt","hours","minutes","elecPrice","failRate","postProcess",
+  "laborRate","laborTime","margin","minPrice","vatRate","printerCost","lifetimeHours","resinVol","resinPrice","resinWatt","resinConsumables"];
+var SNAP_SELECTS = ["material","printer","resinPrinter","resinMaterial"];
+function takeSnapshot(){
+  var s = {mode: mode, color: selectedColor, brand: $("materialBrand") ? $("materialBrand").value : "",
+           dep: $("depToggle").checked, sel: {}, val: {}};
+  SNAP_SELECTS.forEach(function(id){ if($(id)) s.sel[id] = $(id).value; });
+  SNAP_IDS.forEach(function(id){ if($(id)) s.val[id] = $(id).value; });
+  return s;
+}
+function applySnapshot(s){
+  if(!s || typeof s !== "object") return false;
+  try{
+    Object.keys(s.sel || {}).forEach(function(id){
+      if($(id)){ $(id).value = s.sel[id]; $(id).dispatchEvent(new Event("change")); }
+    });
+    Object.keys(s.val || {}).forEach(function(id){ if($(id)) $(id).value = s.val[id]; });
+    if($("materialBrand")) $("materialBrand").value = s.brand || "";
+    if(s.color) selectedColor = s.color;
+    $("depToggle").checked = !!s.dep;
+    $("depFields").hidden = !s.dep;
+    var tab = document.querySelector('.modetabs button[data-mode="' + (s.mode === "resin" ? "resin" : "fdm") + '"]');
+    if(tab) tab.click();
+    renderColorSwatches();
+    render();
+    return true;
+  }catch(e){ return false; }
+}
+function encodeShare(){ return btoa(unescape(encodeURIComponent(JSON.stringify(takeSnapshot())))); }
+function decodeShare(b64){ return JSON.parse(decodeURIComponent(escape(atob(b64)))); }
+function applySharedHash(){
+  var h = location.hash || "";
+  if(h.indexOf("#s=") !== 0) return;
+  try{ applySnapshot(decodeShare(h.slice(3))); }catch(e){ /* bozuk bağlantı: yoksay */ }
+}
+function copyText(text, btn){
+  var done = function(){
+    if(!btn) return;
+    var orig = btn.textContent;
+    btn.textContent = "✓ " + t("shareCopied");
+    setTimeout(function(){ btn.textContent = orig; }, 1800);
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done).catch(function(){ fallbackCopy(text); done(); });
+  } else { fallbackCopy(text); done(); }
+}
+$("shareBtn").addEventListener("click", function(){
+  var hash = "#s=" + encodeShare();
+  try{ history.replaceState(null, "", hash); }catch(e){ /* ignore */ }
+  copyText(location.href.split("#")[0] + hash, $("shareBtn"));
+});
+
+/* ---------------- PDF / yazdır ---------------- */
+$("printBtn").addEventListener("click", function(){
+  if($("quoteSection").hidden) $("quoteBtn").click();
+  setTimeout(function(){ window.print(); }, 150);
+});
+
+/* ---------------- geçmiş ---------------- */
+var HIST_KEY = "umt3d_history_v1";
+function loadHistory(){
+  try{
+    var a = JSON.parse(localStorage.getItem(HIST_KEY) || "[]");
+    return Array.isArray(a) ? a : [];
+  }catch(e){ return []; }
+}
+function saveHistoryList(a){
+  try{ localStorage.setItem(HIST_KEY, JSON.stringify(a.slice(0, 20))); }catch(e){ /* ignore */ }
+}
+function renderHistory(){
+  var box = $("historyList");
+  if(!box) return;
+  var list = loadHistory();
+  box.innerHTML = "";
+  if(!list.length){
+    var empty = document.createElement("div");
+    empty.className = "muted-note";
+    empty.textContent = t("histEmpty");
+    box.appendChild(empty);
+    return;
+  }
+  list.forEach(function(item, i){
+    var row = document.createElement("div");
+    row.className = "hist-row";
+    var info = document.createElement("div");
+    info.className = "hist-info";
+    var name = document.createElement("strong");
+    name.textContent = item.part || "—";
+    var meta = document.createElement("span");
+    meta.className = "mono";
+    meta.textContent = item.date + " · " + item.label;
+    info.appendChild(name);
+    info.appendChild(meta);
+    var amt = document.createElement("div");
+    amt.className = "mono hist-amt";
+    amt.textContent = item.amount;
+    var restoreB = document.createElement("button");
+    restoreB.className = "btn btn-ghost hist-btn";
+    restoreB.textContent = t("histRestore");
+    restoreB.addEventListener("click", function(){ applySnapshot(item.snap); });
+    var delB = document.createElement("button");
+    delB.className = "btn btn-ghost hist-btn";
+    delB.textContent = "✕";
+    delB.addEventListener("click", function(){
+      var a = loadHistory();
+      a.splice(i, 1);
+      saveHistoryList(a);
+      renderHistory();
+    });
+    row.appendChild(info);
+    row.appendChild(amt);
+    row.appendChild(restoreB);
+    row.appendChild(delB);
+    box.appendChild(row);
+  });
+}
+$("histSaveBtn").addEventListener("click", function(){
+  var calc = window.__lastCalc;
+  if(!calc) return;
+  var list = loadHistory();
+  list.unshift({
+    date: new Date().toLocaleDateString(t("dateLocale")),
+    part: $("partName") ? $("partName").value : "",
+    label: mode === "fdm" ? "FDM" : "RESIN",
+    amount: symbolFor(currency) + " " + fmt(fx(calc.grandTRY).value, 2),
+    snap: takeSnapshot()
+  });
+  saveHistoryList(list);
+  renderHistory();
+});
+
 /* ---------------- init ---------------- */
 function init(){
   populateSelects();
@@ -1330,6 +1539,8 @@ function init(){
       if(saved.postProcess !== undefined) $("postProcess").value = saved.postProcess;
       if(saved.laborRate !== undefined) $("laborRate").value = saved.laborRate;
       if(saved.margin !== undefined) $("margin").value = saved.margin;
+      if(saved.minPrice !== undefined) $("minPrice").value = saved.minPrice;
+      if(saved.vatRate !== undefined) $("vatRate").value = saved.vatRate;
       if(saved.depToggle){ $("depToggle").checked = true; $("depFields").hidden = false; }
       if(saved.printerCost) $("printerCost").value = saved.printerCost;
       if(saved.lifetimeHours) $("lifetimeHours").value = saved.lifetimeHours;
@@ -1349,6 +1560,8 @@ function init(){
     }catch(e){ /* ignore corrupt profile */ }
   }
 
+  applySharedHash();
+  renderHistory();
   updateUnitsLabels();
   applyI18n();
   render();

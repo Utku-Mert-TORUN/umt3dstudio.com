@@ -26,6 +26,14 @@
       btn.addEventListener("click", function(){
         var v = btn.getAttribute("data-theme");
         saveTheme(v);
+        var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        /* View Transitions destekleyen tarayıcılarda tema değişimi yumuşak geçer */
+        if(document.startViewTransition && !reduce){
+          try{
+            document.startViewTransition(function(){ applyTheme(v); });
+            return;
+          }catch(e){ /* düşerse normal değişime geç */ }
+        }
         applyTheme(v);
       });
     });
@@ -69,7 +77,18 @@
     });
   }
 
+  /* Service worker: yalnızca https veya localhost'ta (çevrimdışı kullanım için) */
+  function initPWA(){
+    if(!("serviceWorker" in navigator)) return;
+    var ok = location.protocol === "https:" || location.hostname === "localhost" || location.hostname === "127.0.0.1";
+    if(!ok) return;
+    window.addEventListener("load", function(){
+      navigator.serviceWorker.register("sw.js").catch(function(){ /* sessizce geç */ });
+    });
+  }
+
   document.addEventListener("DOMContentLoaded", function(){
+    initPWA();
     initTheme();
     initNav();
     initReveal();
