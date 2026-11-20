@@ -896,17 +896,11 @@ h1{ font-weight:700; letter-spacing:-.025em; }
 .hero-stats .lbl{ font-family:'Manrope', sans-serif; text-transform:none; font-size:12px; letter-spacing:0 !important; font-weight:600; }
 .btn{ font-family:'Manrope', sans-serif; font-weight:700; letter-spacing:0; }
 
-/* Ana başlığın tamamı gradyan renkli (vurgulu kelime ayrı renk almaz) */
-.hero-section h1{
-  background:linear-gradient(100deg, var(--fg) 0%, var(--accent) 40%, var(--accent-2) 70%, var(--mint) 100%);
-  background-size:220% auto;
-  -webkit-background-clip:text; background-clip:text;
-  -webkit-text-fill-color:transparent; color:transparent;
-  animation:shimmer 9s linear infinite;
-}
-.hero-section h1 .accenttxt{
-  color:inherit; -webkit-text-fill-color:inherit; background:none; -webkit-background-clip:border-box; background-clip:border-box;
-  filter:none; animation:none; -webkit-text-stroke:0;
-}
-@keyframes shimmer{ to{ background-position:220% center; } }
-@media (prefers-reduced-motion: reduce){ .hero-section h1{ animation:none; } }
+/* Ana başlık: her kelime kendi renginde (rengarenk) */
+.hero-section h1 .w1{ color:var(--fg); }
+.hero-section h1 .w2{ color:var(--accent); }
+.hero-section h1 .w3{ color:var(--accent-2); }
+.hero-section h1 .w4{ color:var(--mint); }
+.hero-section h1 .w5{ color:var(--accent); }
+.hero-section h1 .w6{ color:var(--fg); }
+.hero-section h1 .w7{ color:var(--accent-2); }
