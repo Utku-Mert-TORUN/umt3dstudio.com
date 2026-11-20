@@ -905,25 +905,16 @@ h1{ font-weight:700; letter-spacing:-.025em; }
 .hero-section h1 .w6{ color:var(--fg); }
 .hero-section h1 .w7{ color:var(--accent-2); }
 
-/* RGB tarzı renk dalgası: her kelime aynı döngüyü, kademeli gecikmeyle izler */
-@keyframes rgbCycle{
-  0%   { color:#7C5CFF; }
-  20%  { color:#00E5FF; }
-  40%  { color:#39FFB0; }
-  60%  { color:#FFD166; }
-  80%  { color:#FF5C8A; }
-  100% { color:#7C5CFF; }
+/* Ana başlık: tek cümle, masaüstünde tek satır */
+.hero-section h1{
+  max-width:none;
+  font-size:clamp(22px, 2.7vw, 40px);
+  line-height:1.2;
+  letter-spacing:-.01em;
 }
-.hero-section h1 span[class^="w"]{
-  animation:rgbCycle 7s linear infinite;
+@media (min-width:761px){
+  .hero-section h1{ white-space:nowrap; }
 }
-.hero-section h1 .w1{ animation-delay:0s; }
-.hero-section h1 .w2{ animation-delay:-1s; }
-.hero-section h1 .w3{ animation-delay:-2s; }
-.hero-section h1 .w4{ animation-delay:-3s; }
-.hero-section h1 .w5{ animation-delay:-4s; }
-.hero-section h1 .w6{ animation-delay:-5s; }
-.hero-section h1 .w7{ animation-delay:-6s; }
-@media (prefers-reduced-motion: reduce){
-  .hero-section h1 span[class^="w"]{ animation:none; }
+@media (max-width:760px){
+  .hero-section h1{ font-size:clamp(24px, 6.4vw, 34px); }
 }
