@@ -87,7 +87,6 @@ body{
     linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
     var(--noise);
   background-size: auto, auto, 42px 42px, 42px 42px, 200px 200px;
-  background-attachment: fixed;
   background-repeat: no-repeat, no-repeat, repeat, repeat, repeat;
   color:var(--fg);
   font-family:'Manrope',-apple-system,"Segoe UI",sans-serif;
@@ -622,4 +621,48 @@ html{ scrollbar-width:thin; scrollbar-color:var(--accent) var(--surface-2); }
 
 @media (min-width:761px){
   .hero-section h1{ max-width:20ch; }
+}
+
+/* ==========================================================================
+   Performans: kaydırmada takılmayı önlemek için ağır efektleri hafiflet
+   (backdrop-filter, büyük bulanıklık filtreleri, pahalı geçiş animasyonları)
+   ========================================================================== */
+.site-header,
+.feature-card, .step, .hero-stats, .cta-band, .content-page, .site-footer{
+  -webkit-backdrop-filter:none; backdrop-filter:none;
+}
+.site-header{ background:color-mix(in srgb, var(--bg) 96%, transparent); }
+.nav-links{ background:var(--surface-2); }
+.hero-stats .stat{ backdrop-filter:none; }
+.eyebrow{ backdrop-filter:none; -webkit-backdrop-filter:none; }
+.btn-ghost{ backdrop-filter:none; -webkit-backdrop-filter:none; }
+
+/* Arka plan ışıkları: bulanıklık filtresi yerine yumuşak gradyan, animasyonsuz */
+.hero-wrapper::before, .hero-wrapper::after{
+  filter:none; animation:none; opacity:.22;
+  background:radial-gradient(circle, currentColor 0%, transparent 62%);
+  will-change:auto;
+}
+.hero-wrapper::before{ color:var(--accent); }
+.hero-wrapper::after{ color:var(--accent-2); }
+
+/* Yalnızca transform/opacity geçişleri (box-shadow geçişleri kaydırmada kasar) */
+.feature-card, .step{
+  transition:transform .25s cubic-bezier(.22,1,.36,1), border-color .25s ease;
+}
+.feature-card, .step, .btn, .marquee-track, .hero-orb::before{ backface-visibility:hidden; }
+.marquee-track{ will-change:transform; }
+.hero-orb::before{ will-change:transform; }
+.feature-card:hover, .step:hover{ box-shadow:var(--shadow); }
+body, .card, .btn, .feature-card, .step, .footer-inner, .footer-bottom, input, select,
+.badge, .selectwrap, .swatchrow, .line, .quote-card, .cta-band, .section-head, .eyebrow,
+.hero-stats .stat, .nav .mark, .site-header, .nav-links, .theme-toggle{
+  transition-property:background-color, border-color, color;
+}
+.feature-card, .step{ transition-property:transform, border-color; }
+
+/* Dokunmatik ve düşük güçlü cihazlarda ekstra hafifletme */
+@media (hover:none), (max-width:600px){
+  .feature-card::before{ display:none; }
+  .marquee-track{ animation-duration:50s; }
 }

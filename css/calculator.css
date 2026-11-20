@@ -280,3 +280,7 @@ hr.div{border:none; border-top:1px solid var(--border); margin:14px 0;}
   .localebar select{ width:100%; font-size:15px !important; padding-block:10px; }
   .localebar .selectwrap{ min-width:0; }
 }
+
+/* Performans: kaydırmada kasmayı önlemek için bulanıklık kaldırıldı */
+.card{ -webkit-backdrop-filter:none; backdrop-filter:none; }
+.mobile-bar{ -webkit-backdrop-filter:none; backdrop-filter:none; background:var(--surface-2); }

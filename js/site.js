@@ -91,11 +91,17 @@
   function initSpotlight(){
     if(window.matchMedia && window.matchMedia("(hover: none)").matches) return;
     document.querySelectorAll(".feature-card, .step").forEach(function(el){
+      var raf = null, last = null;
       el.addEventListener("pointermove", function(e){
-        var r = el.getBoundingClientRect();
-        el.style.setProperty("--mx", (e.clientX - r.left) + "px");
-        el.style.setProperty("--my", (e.clientY - r.top) + "px");
-      });
+        last = e;
+        if(raf) return;
+        raf = requestAnimationFrame(function(){
+          raf = null;
+          var r = el.getBoundingClientRect();
+          el.style.setProperty("--mx", (last.clientX - r.left) + "px");
+          el.style.setProperty("--my", (last.clientY - r.top) + "px");
+        });
+      }, {passive:true});
     });
   }
 
