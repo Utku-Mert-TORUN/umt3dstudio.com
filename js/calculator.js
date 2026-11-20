@@ -5,6 +5,9 @@
 /* ---------------- i18n ---------------- */
 var STR = {
   tr:{
+    btnBatchAdd:"＋ Toplu listeye ekle", batchTitle:"Toplu teklif listesi", batchCopy:"📋 Listeyi kopyala", batchClear:"Listeyi temizle",
+    batchGrand:"Genel toplam", batchEmpty:"Listede henüz kalem yok. Bir hesaplamayı “Toplu listeye ekle” ile buraya ekle.",
+    batchQty:"Adet", batchRemove:"Kaldır", batchNone:"—",
     lblTpl:"Teklif şablonu", tplBireysel:"Bireysel (%35 kâr)", tplKurumsal:"Kurumsal (%20 kâr)", tplAcele:"Acele teslimat (%50 kâr)",
     lblMinPrice:"Taban (minimum) fiyat", lblVat:"KDV oranı", minNote:"Taban fiyat uygulandı (hesaplanan tutar taban fiyatın altındaydı).",
     rowVat:"KDV", rowGrand:"KDV dahil toplam", btnHistSave:"Geçmişe kaydet", btnShare:"🔗 Bağlantıyı kopyala", btnPrint:"🖨️ PDF / Yazdır",
@@ -43,6 +46,9 @@ var STR = {
     dateLocale:"tr-TR"
   },
   en:{
+    btnBatchAdd:"＋ Add to batch list", batchTitle:"Batch quote list", batchCopy:"📋 Copy list", batchClear:"Clear list",
+    batchGrand:"Grand total", batchEmpty:"No items yet. Use “Add to batch list” to add a calculation here.",
+    batchQty:"Qty", batchRemove:"Remove", batchNone:"—",
     lblTpl:"Quote template", tplBireysel:"Personal (35% margin)", tplKurumsal:"Business (20% margin)", tplAcele:"Rush delivery (50% margin)",
     lblMinPrice:"Minimum price", lblVat:"VAT rate", minNote:"Minimum price applied (calculated amount was below it).",
     rowVat:"VAT", rowGrand:"Total incl. VAT", btnHistSave:"Save to history", btnShare:"🔗 Copy share link", btnPrint:"🖨️ PDF / Print",
@@ -1245,6 +1251,8 @@ function render(){
     vatTRY:vatTRY, grandTRY:grandTRY, minApplied:minApplied
   };
   renderComparison();
+  renderBatch();
+  $("mbTotal").textContent = symbolFor(currency) + " " + fmt(fx(grandTRY).value, 2);
   updateQuoteIfOpen();
 }
 
@@ -1510,6 +1518,97 @@ $("histSaveBtn").addEventListener("click", function(){
   saveHistoryList(list);
   renderHistory();
 });
+
+/* ---------------- toplu teklif listesi ---------------- */
+var BATCH_KEY = "umt3d_batch_v1";
+function loadBatch(){
+  try{
+    var a = JSON.parse(localStorage.getItem(BATCH_KEY) || "[]");
+    return Array.isArray(a) ? a : [];
+  }catch(e){ return []; }
+}
+function saveBatch(a){
+  try{ localStorage.setItem(BATCH_KEY, JSON.stringify(a.slice(0, 100))); }catch(e){ /* ignore */ }
+}
+function batchSumTRY(items){
+  return items.reduce(function(s, it){ return s + it.unit * it.qty; }, 0);
+}
+function renderBatch(){
+  var box = $("batchList");
+  if(!box) return;
+  var items = loadBatch();
+  var sym = symbolFor(currency);
+  box.innerHTML = "";
+  if(!items.length){
+    var empty = document.createElement("div");
+    empty.className = "muted-note";
+    empty.textContent = t("batchEmpty");
+    box.appendChild(empty);
+  }
+  items.forEach(function(it, i){
+    var row = document.createElement("div");
+    row.className = "batch-row";
+    var name = document.createElement("div");
+    name.className = "batch-name";
+    name.textContent = it.name;
+    var qty = document.createElement("input");
+    qty.type = "number"; qty.min = "1"; qty.step = "1"; qty.value = it.qty;
+    qty.className = "batch-qty";
+    qty.setAttribute("aria-label", t("batchQty"));
+    qty.addEventListener("change", function(){
+      var a = loadBatch();
+      if(!a[i]) return;
+      a[i].qty = Math.max(1, parseInt(qty.value, 10) || 1);
+      saveBatch(a);
+      renderBatch();
+    });
+    var line = document.createElement("div");
+    line.className = "mono batch-line";
+    line.textContent = sym + " " + fmt(fx(it.unit * it.qty).value, 2);
+    var del = document.createElement("button");
+    del.className = "btn btn-ghost hist-btn";
+    del.textContent = "✕";
+    del.setAttribute("aria-label", t("batchRemove"));
+    del.addEventListener("click", function(){
+      var a = loadBatch();
+      a.splice(i, 1);
+      saveBatch(a);
+      renderBatch();
+    });
+    row.appendChild(name);
+    row.appendChild(qty);
+    row.appendChild(line);
+    row.appendChild(del);
+    box.appendChild(row);
+  });
+  $("batchTotal").textContent = items.length ? sym + " " + fmt(fx(batchSumTRY(items)).value, 2) : t("batchNone");
+}
+$("batchAddBtn").addEventListener("click", function(){
+  var calc = window.__lastCalc;
+  if(!calc) return;
+  var a = loadBatch();
+  var name = ($("partName").value || "").trim() || ("#" + (a.length + 1));
+  a.push({name: name, qty: 1, unit: calc.grandTRY});
+  saveBatch(a);
+  renderBatch();
+  $("batchCard").scrollIntoView({behavior: "smooth", block: "nearest"});
+});
+$("batchCopyBtn").addEventListener("click", function(){
+  var items = loadBatch();
+  if(!items.length) return;
+  var sym = symbolFor(currency);
+  var lines = items.map(function(it){
+    return it.name + " x" + it.qty + ": " + sym + " " + fmt(fx(it.unit * it.qty).value, 2);
+  });
+  lines.push("---------------------------");
+  lines.push(t("batchGrand") + ": " + sym + " " + fmt(fx(batchSumTRY(items)).value, 2));
+  copyText(lines.join("\n"), $("batchCopyBtn"));
+});
+$("batchClearBtn").addEventListener("click", function(){
+  saveBatch([]);
+  renderBatch();
+});
+$("mbQuoteBtn").addEventListener("click", function(){ $("quoteBtn").click(); });
 
 /* ---------------- init ---------------- */
 function init(){

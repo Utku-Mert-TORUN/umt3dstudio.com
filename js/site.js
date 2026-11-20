@@ -87,7 +87,20 @@
     });
   }
 
+  /* Kartların üzerinde imleci takip eden ışık (dokunmatik cihazlarda kapalı) */
+  function initSpotlight(){
+    if(window.matchMedia && window.matchMedia("(hover: none)").matches) return;
+    document.querySelectorAll(".feature-card, .step").forEach(function(el){
+      el.addEventListener("pointermove", function(e){
+        var r = el.getBoundingClientRect();
+        el.style.setProperty("--mx", (e.clientX - r.left) + "px");
+        el.style.setProperty("--my", (e.clientY - r.top) + "px");
+      });
+    });
+  }
+
   document.addEventListener("DOMContentLoaded", function(){
+    initSpotlight();
     initPWA();
     initTheme();
     initNav();

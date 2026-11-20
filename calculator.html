@@ -272,6 +272,7 @@
             <button class="btn btn-ghost" id="histSaveBtn" data-i18n="btnHistSave">Geçmişe kaydet</button>
             <button class="btn btn-ghost" id="shareBtn" data-i18n="btnShare">🔗 Bağlantıyı kopyala</button>
             <button class="btn btn-ghost" id="printBtn" data-i18n="btnPrint">🖨️ PDF / Yazdır</button>
+            <button class="btn btn-primary" id="batchAddBtn" data-i18n="btnBatchAdd">＋ Toplu listeye ekle</button>
           </div>
           <details class="cmp" id="cmpBox" hidden>
             <summary data-i18n="cmpTitle">Malzeme karşılaştırması</summary>
@@ -329,7 +330,27 @@
     <div id="historyList"></div>
   </div>
 
+  <div class="card" id="batchCard" style="margin-top:16px;">
+    <div class="batch-head">
+      <h2 data-i18n="batchTitle">Toplu teklif listesi</h2>
+      <div class="batch-actions">
+        <button class="btn btn-ghost hist-btn" id="batchCopyBtn" data-i18n="batchCopy">📋 Listeyi kopyala</button>
+        <button class="btn btn-ghost hist-btn" id="batchClearBtn" data-i18n="batchClear">Listeyi temizle</button>
+      </div>
+    </div>
+    <div id="batchList"></div>
+    <div class="batch-total"><span data-i18n="batchGrand">Genel toplam</span><span class="mono" id="batchTotal">—</span></div>
+  </div>
+
   <div class="calc-note" data-i18n="footer">Tüm hesaplamalar tarayıcında yapılır, hiçbir veri sunucuya gönderilmez.</div>
+</div>
+
+<div class="mobile-bar" id="mobileBar">
+  <div>
+    <small data-i18n="rowTotal">Müşteriye Fiyat</small>
+    <strong class="mono" id="mbTotal">—</strong>
+  </div>
+  <button class="btn btn-primary" id="mbQuoteBtn" data-i18n="btnQuote">Teklif</button>
 </div>
 
 <footer class="site-footer" style="margin-top:0;">
