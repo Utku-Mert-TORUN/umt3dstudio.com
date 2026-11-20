@@ -211,7 +211,29 @@
     requestAnimationFrame(step);
   }
 
+  /* Çerezsiz ölçüm (Cloudflare Web Analytics). Yalnızca window.UMT_ANALYTICS_TOKEN doluysa yüklenir. */
+  function initAnalytics(){
+    var token = window.UMT_ANALYTICS_TOKEN;
+    if(!token || typeof token !== "string") return;
+    var sc = document.createElement("script");
+    sc.defer = true;
+    sc.src = "https://static.cloudflareinsights.com/beacon.min.js";
+    sc.setAttribute("data-cf-beacon", JSON.stringify({token: token}));
+    document.head.appendChild(sc);
+  }
+
+  /* Klavye kullanıcıları için: sayfa içeriğine geç bağlantısı odağı doğru yere taşır */
+  function initSkipLink(){
+    var main = document.querySelector("main");
+    var link = document.querySelector(".skip-link");
+    if(!main || !link) return;
+    if(!main.id) main.id = "main";
+    main.setAttribute("tabindex", "-1");
+  }
+
   document.addEventListener("DOMContentLoaded", function(){
+    initAnalytics();
+    initSkipLink();
     initLiveDemo();
     initGallery();
     initInstallHint();

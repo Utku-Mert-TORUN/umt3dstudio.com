@@ -3,8 +3,20 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="3D baskı maliyetini ve müşteri fiyatını hesapla: filament, elektrik, işçilik, amortisman, kâr ve KDV. Toplu teklif, makara takibi ve yedekleme.">
+<link rel="canonical" href="https://umt3dstudio.com/calculator.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Umt3D Studio">
+<meta property="og:title" content="Hesaplayıcı — Umt3D Studio">
+<meta property="og:description" content="3D baskı maliyetini ve müşteri fiyatını hesapla: filament, elektrik, işçilik, amortisman, kâr ve KDV. Toplu teklif, makara takibi ve yedekleme.">
+<meta property="og:url" content="https://umt3dstudio.com/calculator.html">
+<meta property="og:image" content="https://umt3dstudio.com/assets/og.png">
+<meta property="og:locale" content="tr_TR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Hesaplayıcı — Umt3D Studio">
+<meta name="twitter:description" content="3D baskı maliyetini ve müşteri fiyatını hesapla: filament, elektrik, işçilik, amortisman, kâr ve KDV. Toplu teklif, makara takibi ve yedekleme.">
+<meta name="twitter:image" content="https://umt3dstudio.com/assets/og.png">
 <title>Hesaplayıcı — Umt3D Studio</title>
-<meta name="description" content="G-code dosyandan otomatik ağırlık ve süre okuyan, malzeme ve yazıcı kütüphanesiyle 3D baskı maliyetini ve müşteri fiyatını hesaplayan ücretsiz araç.">
 <meta name="author" content="Utku Mert Torun">
 <link rel="icon" href="assets/umt3d-icon.svg?v=3" type="image/svg+xml">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png?v=3">
@@ -12,10 +24,14 @@
 <link rel="icon" href="favicon.ico?v=3">
 <meta name="theme-color" content="#070B1F">
 <link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Manrope:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap">
 <link rel="stylesheet" href="css/site.css">
 <link rel="stylesheet" href="css/calculator.css">
 </head>
 <body>
+<a class="skip-link" href="#main">İçeriğe geç</a>
 
 <header class="site-header">
   <nav class="nav">
@@ -31,16 +47,16 @@
     </div>
     <div class="nav-right">
       <div class="theme-toggle">
-        <button data-theme="light" title="Açık tema">☀</button>
-        <button data-theme="auto" title="Sistem">●</button>
-        <button data-theme="dark" title="Koyu tema">☾</button>
+        <button data-theme="light" title="Açık tema" aria-label="Açık tema">☀</button>
+        <button data-theme="auto" title="Sistem" aria-label="Sistem">●</button>
+        <button data-theme="dark" title="Koyu tema" aria-label="Koyu tema">☾</button>
       </div>
       <button class="nav-burger" aria-label="Menü" aria-expanded="false"><span></span><span></span><span></span></button>
     </div>
   </nav>
 </header>
 
-<div class="calc-wrap">
+<div class="calc-wrap" id="main" tabindex="-1">
 
   <div class="localebar">
     <div class="selectwrap">
@@ -69,7 +85,7 @@
           <div class="ic">📄</div>
           <div class="t1" data-i18n="dropT1">G-code dosyasını buraya bırak</div>
           <div class="t2" data-i18n="dropT2">ya da tıklayıp seç — hiçbir şey sunucuya yüklenmez, her şey tarayıcında kalır</div>
-          <input type="file" id="fileInput" accept=".gcode,.gco,.g,.bgcode,.txt">
+          <input type="file" id="fileInput" accept=".gcode,.gco,.g,.bgcode,.txt" multiple>
         </div>
         <div id="parseResult"></div>
       </div>
@@ -343,6 +359,15 @@
 
   <div class="card" id="historyCard" style="margin-top:16px;">
     <h2 data-i18n="histTitle">Geçmiş hesaplamalar</h2>
+    <div class="hist-tools">
+      <select id="histFilter" aria-label="Teklif durumu">
+        <option value="all" data-i18n="statusAll">Tümü</option>
+        <option value="pending" data-i18n="statusPending">Bekliyor</option>
+        <option value="accepted" data-i18n="statusAccepted">Kabul</option>
+        <option value="cancelled" data-i18n="statusCancelled">İptal</option>
+      </select>
+      <span id="histStats" class="muted-note"></span>
+    </div>
     <div id="historyList"></div>
   </div>
 
@@ -356,6 +381,41 @@
     </div>
     <div id="batchList"></div>
     <div class="batch-total"><span data-i18n="batchGrand">Genel toplam</span><span class="mono" id="batchTotal">—</span></div>
+  </div>
+
+  <div class="card" id="spoolCard" style="margin-top:16px;">
+    <h2 data-i18n="spoolTitle">Makara takibi</h2>
+    <div id="spoolList"></div>
+    <div class="spool-form">
+      <input type="text" id="spoolName" aria-label="Makara adı" data-i18n-ph="spoolName" placeholder="Makara adı (örn. PLA Siyah)">
+      <input type="number" id="spoolGrams" aria-label="Başlangıç gramı" min="1" step="10" value="1000">
+      <button class="btn btn-ghost hist-btn" id="spoolAdd" data-i18n="spoolAdd">Makara ekle</button>
+    </div>
+    <div class="spool-use">
+      <select id="spoolSelect" aria-label="Makara"></select>
+      <button class="btn btn-primary hist-btn" id="spoolUse" data-i18n="spoolUse">Seçili makaradan bu baskıyı düş</button>
+    </div>
+    <div class="muted-note" id="spoolMsg" role="status"></div>
+  </div>
+
+  <details class="card price-card" id="priceCard" style="margin-top:16px;">
+    <summary data-i18n="priceTitle">Fiyat listesi (kendi fiyatların)</summary>
+    <p class="muted-note" data-i18n="priceNote">Değerleri değiştir ve kaydet; tüm hesaplar bu fiyatlarla yapılır.</p>
+    <div id="priceList"></div>
+    <div class="batch-actions" style="margin-top:12px;">
+      <button class="btn btn-primary hist-btn" id="priceSave" data-i18n="priceSave">Kaydet</button>
+      <button class="btn btn-ghost hist-btn" id="priceReset" data-i18n="priceReset">Varsayılana dön</button>
+    </div>
+  </details>
+
+  <div class="card" id="backupCard" style="margin-top:16px;">
+    <h2 data-i18n="backupTitle">Yedekleme</h2>
+    <p class="muted-note" data-i18n="backupNote">Ayarların, geçmişin, toplu listen, fiyatların ve makaraların tek bir dosyaya kaydedilir.</p>
+    <div class="batch-actions" style="margin-top:10px;">
+      <button class="btn btn-primary hist-btn" id="backupExport" data-i18n="backupExport">Yedek indir</button>
+      <label class="btn btn-ghost hist-btn backup-label"><span data-i18n="backupImport">Yedek yükle</span><input type="file" id="backupImportFile" accept="application/json,.json" hidden></label>
+    </div>
+    <div class="muted-note" id="backupMsg" role="status"></div>
   </div>
 
   <div class="calc-note" data-i18n="footer">Tüm hesaplamalar tarayıcında yapılır, hiçbir veri sunucuya gönderilmez.</div>
@@ -377,6 +437,7 @@
 </footer>
 
 <script>document.getElementById("yr").textContent = new Date().getFullYear();</script>
+<script>window.UMT_ANALYTICS_TOKEN = "";</script>
 <script src="js/site.js"></script>
 <script src="js/calculator.js"></script>
 </body>

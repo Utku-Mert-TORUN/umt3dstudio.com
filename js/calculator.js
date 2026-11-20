@@ -5,6 +5,16 @@
 /* ---------------- i18n ---------------- */
 var STR = {
   tr:{
+    histRemove:"Sil",
+    spoolTitle:"Makara takibi", spoolName:"Makara adı (örn. PLA Siyah)", spoolGrams:"Başlangıç gramı", spoolAdd:"Makara ekle",
+    spoolUse:"Seçili makaradan bu baskıyı düş", spoolEmpty:"Henüz makara eklenmedi.", spoolDel:"Makarayı sil", spoolSel:"Makara",
+    spoolWarn:"Makara bu baskıdan az kaldı; kalan 0 g olarak işaretlendi.", spoolDone:"Gram düşüldü.",
+    priceTitle:"Fiyat listesi (kendi fiyatların)", priceNote:"Değerleri değiştir ve kaydet; tüm hesaplar bu fiyatlarla yapılır. Varsayılana dönmek için sıfırla.",
+    priceSave:"Kaydet", priceReset:"Varsayılana dön", priceSaved:"Kaydedildi",
+    backupTitle:"Yedekleme", backupNote:"Ayarların, geçmişin, toplu listen, fiyatların ve makaraların tek bir dosyaya kaydedilir. Hiçbir şey sunucuya gönderilmez.",
+    backupExport:"Yedek indir", backupImport:"Yedek yükle", backupDone:"Yedek yüklendi, sayfa yenileniyor…", backupBad:"Bu dosya geçerli bir Umt3D yedeği değil.",
+    statusPending:"Bekliyor", statusAccepted:"Kabul", statusCancelled:"İptal", statusAll:"Tümü", histStatusLbl:"Teklif durumu", histStatsLbl:"Toplam",
+    multiAdded:"Dosyalar toplu listeye eklendi.",
     btnPng:"🖼️ Görsel indir", pngKicker:"Baskı fiyat teklifi", logoLabel:"Logo (isteğe bağlı)", logoClear:"Logoyu kaldır",
     logoHint:"PNG/JPG, en fazla 400 KB. Tarayıcında saklanır.", logoTooBig:"Bu dosya çok büyük (en fazla 400 KB).",
     btnBatchAdd:"＋ Toplu listeye ekle", batchTitle:"Toplu teklif listesi", batchCopy:"📋 Listeyi kopyala", batchClear:"Listeyi temizle",
@@ -48,6 +58,16 @@ var STR = {
     dateLocale:"tr-TR"
   },
   en:{
+    histRemove:"Delete",
+    spoolTitle:"Spool tracking", spoolName:"Spool name (e.g. PLA Black)", spoolGrams:"Starting grams", spoolAdd:"Add spool",
+    spoolUse:"Deduct this print from selected spool", spoolEmpty:"No spools added yet.", spoolDel:"Delete spool", spoolSel:"Spool",
+    spoolWarn:"Spool had less than this print; remaining set to 0 g.", spoolDone:"Grams deducted.",
+    priceTitle:"Price list (your prices)", priceNote:"Edit the values and save; all calculations use them. Reset to go back to defaults.",
+    priceSave:"Save", priceReset:"Reset to defaults", priceSaved:"Saved",
+    backupTitle:"Backup", backupNote:"Your settings, history, batch list, prices and spools are saved into one file. Nothing is sent to a server.",
+    backupExport:"Download backup", backupImport:"Restore backup", backupDone:"Backup restored, reloading…", backupBad:"This file is not a valid Umt3D backup.",
+    statusPending:"Pending", statusAccepted:"Accepted", statusCancelled:"Cancelled", statusAll:"All", histStatusLbl:"Quote status", histStatsLbl:"Total",
+    multiAdded:"Files added to the batch list.",
     btnPng:"🖼️ Download image", pngKicker:"Printing price quote", logoLabel:"Logo (optional)", logoClear:"Remove logo",
     logoHint:"PNG/JPG, max 400 KB. Stored in your browser.", logoTooBig:"This file is too large (max 400 KB).",
     btnBatchAdd:"＋ Add to batch list", batchTitle:"Batch quote list", batchCopy:"📋 Copy list", batchClear:"Clear list",
@@ -1055,12 +1075,52 @@ dz.addEventListener("click", function(){ fileInput.click(); });
   dz.addEventListener(evt, function(e){ e.preventDefault(); dz.classList.remove("hover"); });
 });
 dz.addEventListener("drop", function(e){
-  var f = e.dataTransfer.files && e.dataTransfer.files[0];
-  if(f) handleFile(f);
+  var fl = e.dataTransfer.files;
+  if(fl && fl.length > 1) processMany(fl);
+  else if(fl && fl[0]) handleFile(fl[0]);
 });
 fileInput.addEventListener("change", function(){
-  if(fileInput.files && fileInput.files[0]) handleFile(fileInput.files[0]);
+  var fl = fileInput.files;
+  if(fl && fl.length > 1) processMany(fl);
+  else if(fl && fl[0]) handleFile(fl[0]);
 });
+
+/* Birden fazla G-code: her dosya için hesaplanır ve toplu listeye eklenir */
+function readText(file){
+  return new Promise(function(resolve, reject){
+    var r = new FileReader();
+    r.onload = function(){ resolve(String(r.result || "")); };
+    r.onerror = reject;
+    r.readAsText(file);
+  });
+}
+function processMany(files){
+  var list = Array.prototype.slice.call(files, 0, 30);
+  list.reduce(function(p, file){
+    return p.then(function(){
+      return readText(file).then(function(text){
+        var density = num("density") || 1.24;
+        var res = parseGcode(text, density);
+        lastParsed = res;
+        if(res.weightG !== null) $("weight").value = Math.round(res.weightG * 10) / 10;
+        if(res.minutes !== null){
+          $("hours").value = Math.floor(res.minutes / 60);
+          $("minutes").value = res.minutes % 60;
+        }
+        render();
+        var calc = window.__lastCalc;
+        if(!calc) return;
+        var a = loadBatch();
+        a.push({name: file.name.replace(/\.[^.]+$/, ""), qty: 1, unit: calc.grandTRY});
+        saveBatch(a);
+      }).catch(function(){ /* okunamayan dosyayı atla */ });
+    });
+  }, Promise.resolve()).then(function(){
+    renderBatch();
+    buzz();
+    $("batchCard").scrollIntoView({behavior: "smooth", block: "nearest"});
+  });
+}
 
 function handleFile(file){
   var reader = new FileReader();
@@ -1464,16 +1524,27 @@ function saveHistoryList(a){
 function renderHistory(){
   var box = $("historyList");
   if(!box) return;
-  var list = loadHistory();
+  var all = loadHistory();
+  var f = $("histFilter") ? $("histFilter").value : "all";
+  var counts = {pending:0, accepted:0, cancelled:0};
+  all.forEach(function(it){ var st = it.status || "pending"; counts[st] = (counts[st] || 0) + 1; });
+  if($("histStats")){
+    $("histStats").textContent = t("histStatsLbl") + ": " + all.length + " · " + t("statusPending") + " " + counts.pending +
+      " · " + t("statusAccepted") + " " + counts.accepted + " · " + t("statusCancelled") + " " + counts.cancelled;
+  }
   box.innerHTML = "";
-  if(!list.length){
+  var rows = all.map(function(it, i){ return {it: it, i: i}; }).filter(function(x){
+    return f === "all" || (x.it.status || "pending") === f;
+  });
+  if(!rows.length){
     var empty = document.createElement("div");
     empty.className = "muted-note";
     empty.textContent = t("histEmpty");
     box.appendChild(empty);
     return;
   }
-  list.forEach(function(item, i){
+  rows.forEach(function(x){
+    var item = x.it, i = x.i;
     var row = document.createElement("div");
     row.className = "hist-row";
     var info = document.createElement("div");
@@ -1488,6 +1559,20 @@ function renderHistory(){
     var amt = document.createElement("div");
     amt.className = "mono hist-amt";
     amt.textContent = item.amount;
+    var st = document.createElement("select");
+    st.className = "hist-status";
+    st.setAttribute("aria-label", t("histStatusLbl"));
+    [["pending","statusPending"],["accepted","statusAccepted"],["cancelled","statusCancelled"]].forEach(function(p){
+      var o = document.createElement("option");
+      o.value = p[0];
+      o.textContent = t(p[1]);
+      if((item.status || "pending") === p[0]) o.selected = true;
+      st.appendChild(o);
+    });
+    st.addEventListener("change", function(){
+      var arr = loadHistory();
+      if(arr[i]){ arr[i].status = st.value; saveHistoryList(arr); renderHistory(); }
+    });
     var restoreB = document.createElement("button");
     restoreB.className = "btn btn-ghost hist-btn";
     restoreB.textContent = t("histRestore");
@@ -1495,14 +1580,16 @@ function renderHistory(){
     var delB = document.createElement("button");
     delB.className = "btn btn-ghost hist-btn";
     delB.textContent = "✕";
+    delB.setAttribute("aria-label", t("histRemove"));
     delB.addEventListener("click", function(){
-      var a = loadHistory();
-      a.splice(i, 1);
-      saveHistoryList(a);
+      var arr = loadHistory();
+      arr.splice(i, 1);
+      saveHistoryList(arr);
       renderHistory();
     });
     row.appendChild(info);
     row.appendChild(amt);
+    row.appendChild(st);
     row.appendChild(restoreB);
     row.appendChild(delB);
     box.appendChild(row);
@@ -1517,7 +1604,8 @@ $("histSaveBtn").addEventListener("click", function(){
     part: $("partName") ? $("partName").value : "",
     label: mode === "fdm" ? "FDM" : "RESIN",
     amount: symbolFor(currency) + " " + fmt(fx(calc.grandTRY).value, 2),
-    snap: takeSnapshot()
+    snap: takeSnapshot(),
+    status: "pending"
   });
   saveHistoryList(list);
   renderHistory();
@@ -1692,8 +1780,228 @@ $("pngBtn").addEventListener("click", function(){
   a.remove();
 });
 
+/* ---------------- fiyat listesi (kullanıcı fiyatları) ---------------- */
+var PRICE_KEY = "umt3d_prices_v1";
+function loadPriceOverrides(){
+  try{ var o = JSON.parse(localStorage.getItem(PRICE_KEY) || "{}"); return (o && typeof o === "object") ? o : {}; }
+  catch(e){ return {}; }
+}
+function savePriceOverrides(o){
+  try{ localStorage.setItem(PRICE_KEY, JSON.stringify(o)); }catch(e){ /* ignore */ }
+}
+function applyPriceOverrides(){
+  var o = loadPriceOverrides();
+  MATERIALS.forEach(function(m){
+    if(m.defaultPrice === undefined) m.defaultPrice = m.price;
+    m.price = (o["f:" + m.id] !== undefined) ? +o["f:" + m.id] : m.defaultPrice;
+  });
+  RESIN_MATERIALS.forEach(function(m){
+    if(m.defaultPrice === undefined) m.defaultPrice = m.price;
+    m.price = (o["r:" + m.id] !== undefined) ? +o["r:" + m.id] : m.defaultPrice;
+  });
+}
+function renderPriceEditor(){
+  var box = $("priceList");
+  if(!box) return;
+  box.innerHTML = "";
+  [{label:"FDM", list:MATERIALS, prefix:"f:", unit:"₺ / kg"},
+   {label:"Reçine", list:RESIN_MATERIALS, prefix:"r:", unit:"₺ / L"}].forEach(function(sec){
+    var h = document.createElement("div");
+    h.className = "price-sec";
+    h.textContent = sec.label + " · " + sec.unit;
+    box.appendChild(h);
+    sec.list.forEach(function(m){
+      var row = document.createElement("label");
+      row.className = "price-row";
+      var name = document.createElement("span");
+      name.textContent = (lang === "tr" ? m.tr : m.en);
+      var inp = document.createElement("input");
+      inp.type = "number"; inp.min = "0"; inp.step = "10"; inp.value = m.price;
+      inp.dataset.key = sec.prefix + m.id;
+      row.appendChild(name);
+      row.appendChild(inp);
+      box.appendChild(row);
+    });
+  });
+}
+function refreshAfterPrices(){
+  if($("material")) $("material").dispatchEvent(new Event("change"));
+  if($("resinMaterial")) $("resinMaterial").dispatchEvent(new Event("change"));
+  renderComparison();
+  render();
+}
+$("priceSave").addEventListener("click", function(){
+  var o = loadPriceOverrides();
+  document.querySelectorAll("#priceList input[data-key]").forEach(function(inp){
+    var v = parseFloat(inp.value);
+    if(!isNaN(v) && v >= 0) o[inp.dataset.key] = v;
+  });
+  savePriceOverrides(o);
+  applyPriceOverrides();
+  refreshAfterPrices();
+  var btn = $("priceSave"), orig = btn.textContent;
+  btn.textContent = "✓ " + t("priceSaved");
+  setTimeout(function(){ btn.textContent = orig; }, 1400);
+});
+$("priceReset").addEventListener("click", function(){
+  savePriceOverrides({});
+  applyPriceOverrides();
+  renderPriceEditor();
+  refreshAfterPrices();
+});
+
+/* ---------------- makara takibi ---------------- */
+var SPOOL_KEY = "umt3d_spools_v1";
+function loadSpools(){
+  try{ var a = JSON.parse(localStorage.getItem(SPOOL_KEY) || "[]"); return Array.isArray(a) ? a : []; }
+  catch(e){ return []; }
+}
+function saveSpools(a){
+  try{ localStorage.setItem(SPOOL_KEY, JSON.stringify(a.slice(0, 50))); }catch(e){ /* ignore */ }
+}
+function renderSpools(){
+  var box = $("spoolList");
+  if(!box) return;
+  var list = loadSpools();
+  var sel = $("spoolSelect");
+  var prev = sel.value;
+  sel.innerHTML = "";
+  box.innerHTML = "";
+  if(!list.length){
+    var empty = document.createElement("div");
+    empty.className = "muted-note";
+    empty.textContent = t("spoolEmpty");
+    box.appendChild(empty);
+  }
+  list.forEach(function(s, i){
+    var o = document.createElement("option");
+    o.value = String(i);
+    o.textContent = s.name + " (" + Math.round(s.remaining) + " g)";
+    sel.appendChild(o);
+    var row = document.createElement("div");
+    row.className = "spool-row";
+    var info = document.createElement("div");
+    info.className = "spool-info";
+    var nm = document.createElement("strong");
+    nm.textContent = s.name;
+    var amt = document.createElement("span");
+    amt.className = "mono";
+    amt.textContent = Math.round(s.remaining) + " / " + Math.round(s.initial) + " g";
+    info.appendChild(nm);
+    info.appendChild(amt);
+    var bar = document.createElement("div");
+    bar.className = "spool-bar";
+    var fill = document.createElement("i");
+    var pct = s.initial > 0 ? Math.max(0, Math.min(100, s.remaining / s.initial * 100)) : 0;
+    fill.style.width = pct + "%";
+    bar.appendChild(fill);
+    var del = document.createElement("button");
+    del.className = "btn btn-ghost hist-btn";
+    del.type = "button";
+    del.textContent = "✕";
+    del.setAttribute("aria-label", t("spoolDel"));
+    del.addEventListener("click", function(){
+      var a = loadSpools();
+      a.splice(i, 1);
+      saveSpools(a);
+      renderSpools();
+    });
+    row.appendChild(info);
+    row.appendChild(bar);
+    row.appendChild(del);
+    box.appendChild(row);
+  });
+  if(prev && sel.querySelector('option[value="' + prev + '"]')) sel.value = prev;
+}
+$("spoolAdd").addEventListener("click", function(){
+  var name = ($("spoolName").value || "").trim();
+  var grams = parseFloat($("spoolGrams").value);
+  if(!name || !(grams > 0)) return;
+  var a = loadSpools();
+  a.push({name: name, initial: grams, remaining: grams});
+  saveSpools(a);
+  $("spoolName").value = "";
+  renderSpools();
+});
+$("spoolUse").addEventListener("click", function(){
+  var a = loadSpools();
+  var idx = $("spoolSelect").value;
+  if(idx === "" || !a[idx]) return;
+  var w = num("weight");
+  var msg = $("spoolMsg");
+  if(a[idx].remaining < w){
+    a[idx].remaining = 0;
+    msg.textContent = t("spoolWarn");
+  } else {
+    a[idx].remaining = a[idx].remaining - w;
+    msg.textContent = t("spoolDone");
+  }
+  saveSpools(a);
+  renderSpools();
+});
+
+/* ---------------- yedekleme ---------------- */
+var BACKUP_KEYS = ["umt3d_calc_profile_v1","umt3d_history_v1","umt3d_batch_v1","umt3d_prices_v1","umt3d_spools_v1","umt3d_logo_v1","umt3d_theme"];
+var BACKUP_JSON_KEYS = ["umt3d_calc_profile_v1","umt3d_history_v1","umt3d_batch_v1","umt3d_prices_v1","umt3d_spools_v1"];
+function exportBackupJSON(){
+  var data = {};
+  BACKUP_KEYS.forEach(function(k){
+    var v = null;
+    try{ v = localStorage.getItem(k); }catch(e){ /* ignore */ }
+    if(v !== null) data[k] = v;
+  });
+  return JSON.stringify({app: "umt3d-studio", version: 1, exportedAt: new Date().toISOString(), data: data}, null, 2);
+}
+function importBackupJSON(text){
+  var obj = JSON.parse(text);
+  if(!obj || obj.app !== "umt3d-studio" || !obj.data || typeof obj.data !== "object") throw new Error("bad-backup");
+  var keys = Object.keys(obj.data).filter(function(k){ return BACKUP_KEYS.indexOf(k) >= 0; });
+  keys.forEach(function(k){
+    if(typeof obj.data[k] !== "string") throw new Error("bad-backup");
+    if(BACKUP_JSON_KEYS.indexOf(k) >= 0) JSON.parse(obj.data[k]);
+  });
+  keys.forEach(function(k){ localStorage.setItem(k, obj.data[k]); });
+  return keys.length;
+}
+$("backupExport").addEventListener("click", function(){
+  var blob = new Blob([exportBackupJSON()], {type: "application/json"});
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "umt3d-yedek.json";
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+});
+$("backupImportFile").addEventListener("change", function(){
+  var f = $("backupImportFile").files && $("backupImportFile").files[0];
+  if(!f) return;
+  var r = new FileReader();
+  r.onload = function(){
+    try{
+      importBackupJSON(String(r.result));
+      $("backupMsg").textContent = t("backupDone");
+      setTimeout(function(){ location.reload(); }, 700);
+    }catch(e){
+      $("backupMsg").textContent = t("backupBad");
+    }
+  };
+  r.readAsText(f);
+});
+if($("histFilter")) $("histFilter").addEventListener("change", renderHistory);
+
+/* Test ve gelişmiş kullanım için saf yardımcılar (yalnızca okunur) */
+window.Umt3D = {
+  parseGcode: parseGcode,
+  parseDurationToMinutes: parseDurationToMinutes,
+  lengthToGrams: lengthToGrams,
+  MATERIALS: MATERIALS,
+  exportBackupJSON: exportBackupJSON,
+  importBackupJSON: importBackupJSON
+};
+
 /* ---------------- init ---------------- */
 function init(){
+  applyPriceOverrides();
   populateSelects();
   populateLangSelect();
   populateCurrencySelect();
@@ -1741,6 +2049,8 @@ function init(){
     }catch(e){ /* ignore corrupt profile */ }
   }
 
+  renderPriceEditor();
+  renderSpools();
   applySharedHash();
   renderHistory();
   updateUnitsLabels();

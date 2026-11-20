@@ -3,6 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Umt3D Studio gizlilik politikası: hesaplamalar tarayıcıda yapılır, veriler sunucuya gönderilmez.">
+<link rel="canonical" href="https://umt3dstudio.com/privacy.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Umt3D Studio">
+<meta property="og:title" content="Gizlilik — Umt3D Studio">
+<meta property="og:description" content="Umt3D Studio gizlilik politikası: hesaplamalar tarayıcıda yapılır, veriler sunucuya gönderilmez.">
+<meta property="og:url" content="https://umt3dstudio.com/privacy.html">
+<meta property="og:image" content="https://umt3dstudio.com/assets/og.png">
+<meta property="og:locale" content="tr_TR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Gizlilik — Umt3D Studio">
+<meta name="twitter:description" content="Umt3D Studio gizlilik politikası: hesaplamalar tarayıcıda yapılır, veriler sunucuya gönderilmez.">
+<meta name="twitter:image" content="https://umt3dstudio.com/assets/og.png">
 <title>Gizlilik — Umt3D Studio</title>
 <meta name="author" content="Utku Mert Torun">
 <link rel="icon" href="assets/umt3d-icon.svg?v=3" type="image/svg+xml">
@@ -11,9 +24,13 @@
 <link rel="icon" href="favicon.ico?v=3">
 <meta name="theme-color" content="#070B1F">
 <link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Manrope:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap">
 <link rel="stylesheet" href="css/site.css">
 </head>
 <body>
+<a class="skip-link" href="#main">İçeriğe geç</a>
 
 <header class="site-header">
   <nav class="nav">
@@ -29,16 +46,16 @@
     </div>
     <div class="nav-right">
       <div class="theme-toggle">
-        <button data-theme="light" title="Açık tema">☀</button>
-        <button data-theme="auto" title="Sistem">●</button>
-        <button data-theme="dark" title="Koyu tema">☾</button>
+        <button data-theme="light" title="Açık tema" aria-label="Açık tema">☀</button>
+        <button data-theme="auto" title="Sistem" aria-label="Sistem">●</button>
+        <button data-theme="dark" title="Koyu tema" aria-label="Koyu tema">☾</button>
       </div>
       <button class="nav-burger" aria-label="Menü" aria-expanded="false"><span></span><span></span><span></span></button>
     </div>
   </nav>
 </header>
 
-<main class="content-page">
+<main id="main" class="content-page">
   <h1>Gizlilik</h1>
   <div class="updated">Son güncelleme: 2026</div>
 
@@ -77,6 +94,7 @@
 </footer>
 
 <script>document.getElementById("yr").textContent = new Date().getFullYear();</script>
+<script>window.UMT_ANALYTICS_TOKEN = "";</script>
 <script src="js/site.js"></script>
 </body>
 </html>

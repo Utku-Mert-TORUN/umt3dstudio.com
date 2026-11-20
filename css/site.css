@@ -71,7 +71,6 @@
   color-scheme: light;
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Manrope:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap');
 
 *,*::before,*::after{box-sizing:border-box;}
 html,body{height:100%;}
@@ -863,3 +862,10 @@ body{
 @media (max-width:600px){
   .eyebrow{ font-size:11.5px; letter-spacing:.06em; padding:7px 12px; white-space:normal; text-align:center; line-height:1.35; }
 }
+
+/* ---------------- erişilebilirlik: atlama bağlantısı ---------------- */
+.skip-link{
+  position:absolute; left:12px; top:-60px; z-index:100; padding:10px 16px; border-radius:8px;
+  background:var(--accent); color:#fff; font-weight:700; text-decoration:none;
+}
+.skip-link:focus{ top:12px; }
