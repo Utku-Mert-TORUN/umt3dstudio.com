@@ -812,3 +812,23 @@ body{
 /* Açık temada tema renkleri sade kalsın */
 :root[data-theme="light"] .btn-primary, :root[data-theme="light"] .feature-card::before{ color:#fff; }
 :root[data-theme="light"] .btn-primary{ color:#fff; }
+
+/* ==========================================================================
+   Hafif tarama çizgisi (yalnızca koyu tema, animasyonsuz, tıklamayı engellemez)
+   ========================================================================== */
+@media (prefers-color-scheme: dark), (prefers-color-scheme: no-preference){
+  :root:not([data-theme="light"]) body::after{
+    content:""; position:fixed; inset:0; z-index:9999; pointer-events:none;
+    background:repeating-linear-gradient(to bottom, rgba(0,229,255,.035) 0px, rgba(0,229,255,.035) 1px, transparent 1px, transparent 3px);
+    opacity:.55; will-change:transform; transform:translateZ(0);
+  }
+}
+:root[data-theme="dark"] body::after{
+  content:""; position:fixed; inset:0; z-index:9999; pointer-events:none;
+  background:repeating-linear-gradient(to bottom, rgba(0,229,255,.035) 0px, rgba(0,229,255,.035) 1px, transparent 1px, transparent 3px);
+  opacity:.55; will-change:transform; transform:translateZ(0);
+}
+@media (max-width:600px), (prefers-reduced-motion: reduce){
+  :root:not([data-theme="light"]) body::after, :root[data-theme="dark"] body::after{ display:none; }
+}
+:root[data-theme="light"] body::after{ display:none; }
