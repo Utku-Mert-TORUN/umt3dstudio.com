@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Umt3D Studio">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1B1656"/><stop offset="1" stop-color="#050818"/>
+    </linearGradient>
+    <linearGradient id="edge" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7C5CFF"/><stop offset="1" stop-color="#00E5FF"/>
+    </linearGradient>
+    <linearGradient id="top" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#B9A8FF"/><stop offset="1" stop-color="#7C5CFF"/>
+    </linearGradient>
+    <linearGradient id="left" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5B3FD9"/><stop offset="1" stop-color="#2A1C7A"/>
+    </linearGradient>
+    <linearGradient id="right" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#00E5FF"/><stop offset="1" stop-color="#39FFB0"/>
+    </linearGradient>
+  </defs>
+  <rect x="8" y="8" width="496" height="496" rx="112" fill="url(#bg)" stroke="url(#edge)" stroke-width="10"/>
+  <!-- izometrik küp: baskı parçası -->
+  <path d="M256 128 L378 198 L256 268 L134 198 Z" fill="url(#top)"/>
+  <path d="M134 198 L256 268 L256 392 L134 322 Z" fill="url(#left)"/>
+  <path d="M256 268 L378 198 L378 322 L256 392 Z" fill="url(#right)" opacity=".92"/>
+  <path d="M256 128 L378 198 L256 268 L134 198 Z" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="4" stroke-linejoin="round"/>
+  <!-- katman çizgileri -->
+  <path d="M256 268 L256 392" stroke="#fff" stroke-opacity=".25" stroke-width="4"/>
+  <path d="M150 262 L240 316 M150 294 L240 348" stroke="#fff" stroke-opacity=".12" stroke-width="3"/>
+  <!-- filament çizgisi -->
+  <path d="M256 392 C256 430 300 436 330 420" fill="none" stroke="#39FFB0" stroke-width="10" stroke-linecap="round"/>
+</svg>

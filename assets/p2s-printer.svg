@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 220" role="img" aria-label="P2S 3D yazıcı">
+  <defs>
+    <linearGradient id="frame" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3B3F8C"/><stop offset="1" stop-color="#1A1E4A"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#00E5FF" stop-opacity=".30"/><stop offset="1" stop-color="#7C5CFF" stop-opacity=".08"/>
+    </linearGradient>
+    <linearGradient id="bed" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#7C5CFF"/><stop offset="1" stop-color="#00E5FF"/>
+    </linearGradient>
+  </defs>
+  <!-- kasa -->
+  <rect x="26" y="20" width="188" height="170" rx="14" fill="url(#frame)" stroke="#7C5CFF" stroke-opacity=".6" stroke-width="2"/>
+  <!-- cam pencere -->
+  <rect x="42" y="36" width="156" height="120" rx="8" fill="url(#glass)" stroke="#00E5FF" stroke-opacity=".45" stroke-width="1.5"/>
+  <!-- üst portal (X ekseni) -->
+  <rect x="58" y="54" width="124" height="10" rx="5" fill="#2B3080" stroke="#00E5FF" stroke-opacity=".5"/>
+  <!-- nozzle -->
+  <path d="M112 64 L128 64 L124 84 L116 84 Z" fill="#B9A8FF"/>
+  <circle cx="120" cy="90" r="4" fill="#39FFB0"/>
+  <!-- baskı parçası -->
+  <rect x="104" y="112" width="32" height="16" rx="3" fill="#39FFB0" opacity=".9"/>
+  <rect x="104" y="128" width="32" height="8" rx="2" fill="#39FFB0" opacity=".55"/>
+  <!-- tabla -->
+  <rect x="62" y="136" width="116" height="10" rx="4" fill="url(#bed)"/>
+  <!-- alt kısım ve etiket -->
+  <rect x="48" y="190" width="144" height="8" rx="4" fill="#2B3080"/>
+  <text x="120" y="212" text-anchor="middle" font-family="Space Mono, monospace" font-size="14" font-weight="700" fill="#00E5FF" letter-spacing="3">P2S</text>
+  <!-- durum ışığı -->
+  <circle cx="196" cy="34" r="4" fill="#39FFB0"/>
+</svg>

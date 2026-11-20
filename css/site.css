@@ -832,3 +832,34 @@ body{
   :root:not([data-theme="light"]) body::after, :root[data-theme="dark"] body::after{ display:none; }
 }
 :root[data-theme="light"] body::after{ display:none; }
+
+/* ==========================================================================
+   Marka ikonu, ana ekran sahnesi (P2S yazıcı · logo · filament rulosu)
+   ========================================================================== */
+.mark-img{ width:34px; height:34px; display:block; border-radius:8px; flex:none; filter:drop-shadow(0 0 12px color-mix(in srgb, var(--accent-2) 35%, transparent)); }
+.mark-img-sm{ width:30px; height:30px; }
+
+.hero-stage{
+  display:flex; align-items:center; justify-content:center; gap:clamp(10px,3vw,40px);
+  margin:0 auto 28px; max-width:620px;
+}
+.hero-stage .hero-orb{ margin:0; flex:none; }
+.hero-orb span{ background:radial-gradient(circle at 35% 30%, #1B1656, #050818); }
+.hero-orb span img{ width:62%; height:62%; display:block; }
+.hs-side{ margin:0; flex:0 1 auto; width:clamp(92px,17vw,150px); }
+.hs-side img{
+  width:100%; height:auto; display:block;
+  filter:drop-shadow(0 12px 26px rgba(0,0,0,.45)) drop-shadow(0 0 22px color-mix(in srgb, var(--accent) 30%, transparent));
+  animation:bob 6s ease-in-out infinite;
+}
+.hs-right img{ animation-delay:-3s; animation-duration:7.5s; }
+@keyframes bob{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-8px); } }
+@media (prefers-reduced-motion: reduce){ .hs-side img{ animation:none; } }
+@media (max-width:600px){
+  .hero-stage{ gap:10px; margin-bottom:22px; }
+  .hero-stage .hero-orb{ width:104px; height:104px; }
+  .hs-side{ width:84px; }
+}
+@media (max-width:600px){
+  .eyebrow{ font-size:11.5px; letter-spacing:.06em; padding:7px 12px; white-space:normal; text-align:center; line-height:1.35; }
+}

@@ -6,6 +6,7 @@
 <title>Umt3D Studio — 3D Baskı Fiyat Hesaplayıcı</title>
 <meta name="description" content="Umt3D Studio: G-code dosyandan otomatik okuyan, malzeme ve yazıcı kütüphanesiyle saniyeler içinde gerçek maliyeti ve müşteri fiyatını çıkaran ücretsiz 3D baskı hesaplayıcısı.">
 <meta name="author" content="Utku Mert Torun">
+<link rel="icon" href="assets/umt3d-icon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon.ico">
 <meta name="theme-color" content="#070B1F">
 <link rel="manifest" href="manifest.webmanifest">
@@ -16,7 +17,7 @@
 <header class="site-header">
   <nav class="nav">
     <a href="index.html" class="brand">
-      <div class="mark">3D</div>
+      <img class="mark-img" src="assets/umt3d-icon.svg" alt="Umt3D Studio" width="34" height="34">
       <div class="brandname">Umt3D Studio<small>FİYATLANDIRMA ARACI</small></div>
     </a>
     <div class="nav-links" id="navLinks">
@@ -39,7 +40,11 @@
 <main>
   <div class="hero-wrapper">
   <section class="hero-section">
-    <div class="hero-orb" aria-hidden="true"><span>3D</span></div>
+    <div class="hero-stage" aria-hidden="true">
+      <figure class="hs-side hs-left"><img src="assets/p2s-printer.svg" alt="" width="240" height="220"></figure>
+      <div class="hero-orb"><span><img src="assets/umt3d-icon.svg" alt="" width="150" height="150"></span></div>
+      <figure class="hs-side hs-right"><img src="assets/filament-spool.svg" alt="" width="220" height="220"></figure>
+    </div>
     <span class="eyebrow">✦ ÜCRETSİZ · TARAYICINDA ÇALIŞIR</span>
     <h1>3D BASKININ <span class="accenttxt">GERÇEK MALİYETİNİ</span> SANİYELER İÇİNDE ÖĞREN</h1>
     <p class="lede">
@@ -191,7 +196,7 @@
   <div class="footer-inner">
     <div>
       <div class="fbrand">
-        <div class="mark" style="width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;">3D</div>
+        <img class="mark-img mark-img-sm" src="assets/umt3d-icon.svg" alt="" width="30" height="30">
         <strong style="font-family:'Syne',sans-serif;">Umt3D Studio</strong>
       </div>
       <p>3D baskı atölyeleri ve hobi yazıcıları için ücretsiz, tarayıcı tabanlı maliyet ve fiyat teklifi hesaplayıcısı.</p>
