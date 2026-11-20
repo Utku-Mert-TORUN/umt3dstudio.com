@@ -6,7 +6,7 @@
    Açık tema aşağıda ayrı tanımlı. */
 :root{
   /* ---- palette (dark navy glass) ---- */
-  --bg:#070B1F;
+  --bg:#03060F;
   --bg-glow-1:rgba(124,92,255,.30);
   --bg-glow-2:rgba(34,211,238,.16);
   --surface:rgba(18,24,58,.56);
@@ -14,12 +14,12 @@
   --fg:#EEF1FF;
   --muted:#9AA6CC;
   --border:rgba(150,170,255,.16);
-  --accent:#8B6CFF;
+  --accent:#7C5CFF;
   --accent-ink:#E4DDFF;
-  --accent-2:#22D3EE;
+  --accent-2:#00E5FF;
   --accent-2-ink:#D2F7FF;
-  --mint:#6EE7B7;
-  --good:#6EE7B7;
+  --mint:#39FFB0;
+  --good:#39FFB0;
   --warn:#FCD34D;
   --bad:#FB7185;
   --glass-blur:14px;
@@ -30,7 +30,7 @@
   /* ---- noise texture (subtle grain) ---- */
   --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
   /* ---- grid line pattern for bg ---- */
-  --grid-line: rgba(160,180,255,.045);
+  --grid-line: rgba(0,229,255,.055);
   color-scheme: dark;
 }
 /* Sistem açık temayı istiyorsa (ve kullanıcı koyu seçmediyse) */
@@ -728,5 +728,87 @@ body, .card, .btn, .feature-card, .step, .footer-inner, .footer-bottom, input, s
 .install-hint span{ font-size:12.5px; color:var(--muted); }
 .install-hint button{ border:none; background:transparent; cursor:pointer; color:var(--muted); font-size:16px; padding:6px; }
 
-.theme-toggle button{ transition:transform .3s cubic-bezier(.34,1.56,.64,1), background-color .2s; }
-.theme-toggle button.active{ transform:rotate(-14deg) scale(1.1); }
+.theme-toggle button{ transition:background-color .2s ease, color .2s ease; }
+.theme-toggle button.active{ transform:none; }
+
+/* ==========================================================================
+   v4 — teknolojik / HUD görünümü (koyu tema). Açık tema okunabilir kalır.
+   ========================================================================== */
+/* Başlıklara terminal tarzı önek */
+.section-head h2::before{
+  content:"// "; font-family:'Space Mono',monospace; font-weight:400; color:var(--accent-2); font-size:.8em; letter-spacing:0;
+}
+.eyebrow{
+  font-family:'Space Mono',monospace; font-size:13px; font-weight:700; letter-spacing:.14em;
+  border-radius:4px; padding:8px 14px;
+  background:color-mix(in srgb, var(--accent-2) 8%, transparent);
+  border-color:color-mix(in srgb, var(--accent-2) 55%, transparent);
+  box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--accent-2) 10%, transparent), 0 0 24px -8px color-mix(in srgb, var(--accent-2) 60%, transparent);
+}
+.eyebrow::before{ content:"▍"; color:var(--accent-2); }
+
+/* Kartlar: köşeli, üst kenarda ışıklı çizgi */
+.feature-card, .step, .demo-card, .demo-result, .sample-quote, .card, .author, .hero-stats{
+  border-radius:8px;
+}
+.feature-card, .step, .card, .demo-card, .author{
+  box-shadow:inset 0 1px 0 color-mix(in srgb, var(--accent-2) 22%, transparent), var(--shadow-sm);
+}
+.feature-card .ic{ border-radius:6px; }
+.step .n{ border-radius:4px; font-family:'Space Mono',monospace; }
+.feature-card h3, .step h3{ letter-spacing:.005em; }
+.feature-card::before{ font-family:'Space Mono',monospace; font-weight:700; font-size:40px; }
+
+/* Ana başlık: neon */
+.hero-section h1 .accenttxt{
+  filter:drop-shadow(0 0 18px color-mix(in srgb, var(--accent-2) 35%, transparent));
+}
+
+/* Butonlar: köşeli (kesik köşe) neon */
+.btn{ border-radius:6px; }
+.btn-primary{
+  clip-path:polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+  box-shadow:none;
+  background:linear-gradient(100deg, var(--accent), var(--accent-2));
+  color:#03060F; font-weight:800;
+}
+.btn-primary:hover{ filter:brightness(1.1) saturate(1.1); box-shadow:none; }
+.btn-ghost{ border-radius:6px; border-color:color-mix(in srgb, var(--accent-2) 30%, var(--border)); }
+
+/* Rozet ve etiketler: mono */
+.trust-row span, .sq-tag, .marquee-track, .hero-stats .lbl, .demo-field output, .demo-note, .sq-head small{
+  font-family:'Space Mono',monospace;
+}
+.trust-row span{ border-radius:4px; font-size:12px; letter-spacing:.04em; }
+.marquee{ border-block-color:color-mix(in srgb, var(--accent-2) 25%, var(--border)); }
+.marquee-track span::after{ color:var(--mint); }
+
+/* Canlı ölçüm çizgileri */
+.demo-field input[type=range]{ accent-color:var(--accent-2); }
+.demo-result strong{
+  text-shadow:0 0 28px color-mix(in srgb, var(--mint) 45%, transparent);
+}
+
+/* Arka plan: hafif tarama ışığı + köşe vurgusu (sabit değil; kaydırmayı yavaşlatmaz) */
+body{
+  background-image:
+    radial-gradient(1100px 620px at 12% -8%, var(--bg-glow-1), transparent 62%),
+    radial-gradient(900px 560px at 92% 4%, var(--bg-glow-2), transparent 60%),
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
+    var(--noise);
+}
+.site-header{ border-bottom-color:color-mix(in srgb, var(--accent-2) 22%, var(--border)); }
+.nav-links a.active{ color:var(--accent-2); }
+.nav-links a.active::after{ background:var(--accent-2); box-shadow:0 0 10px var(--accent-2); }
+.nav .mark{ border-radius:6px; box-shadow:0 0 22px -4px color-mix(in srgb, var(--accent-2) 60%, transparent); }
+
+/* Teklif kartı ve fiyat: mono ile teknik görünüm */
+.line .r, .batch-total .mono, .mobile-bar strong{ font-family:'Space Mono',monospace; }
+.install-hint{ border-radius:8px; }
+.cta-band{ border-radius:10px; }
+.cta-band h2{ text-transform:uppercase; letter-spacing:.02em; font-size:clamp(20px,3vw,30px); }
+
+/* Açık temada tema renkleri sade kalsın */
+:root[data-theme="light"] .btn-primary, :root[data-theme="light"] .feature-card::before{ color:#fff; }
+:root[data-theme="light"] .btn-primary{ color:#fff; }
