@@ -918,3 +918,16 @@ h1{ font-weight:700; letter-spacing:-.025em; }
 @media (max-width:760px){
   .hero-section h1{ font-size:clamp(24px, 6.4vw, 34px); }
 }
+
+/* ---------------- yazdırma (tüm sayfalar) ---------------- */
+@media print{
+  :root, :root[data-theme]{ color-scheme:light; }
+  body, body::after{ background:#fff !important; color:#000 !important; background-image:none !important; }
+  body::after, .site-header, .site-footer, .skip-link, .theme-toggle, .nav-burger, .btn, .marquee, .mobile-bar,
+  .install-hint, .hero-orb, .hero-stage, .trust-row, .calc-note, .localebar, .ticket, #historyCard, #batchCard, #spoolCard, #backupCard, #priceCard{ display:none !important; }
+  a{ color:#000 !important; text-decoration:underline; }
+  .content-page, .calc-wrap{ max-width:none; padding:0; }
+  h1,h2,h3{ color:#000 !important; page-break-after:avoid; }
+  .card, .feature-card, .step{ box-shadow:none !important; border:1px solid #bbb !important; background:#fff !important; }
+  .reveal{ opacity:1 !important; transform:none !important; }
+}
