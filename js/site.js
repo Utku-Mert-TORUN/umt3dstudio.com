@@ -67,12 +67,20 @@
     items.forEach(function(el){ io.observe(el); });
   }
 
+  /* Aktif menü: temiz adresler (/calculator) ve .html'li adresler (/calculator.html) aynı sayılır */
+  function pageKey(p){
+    var name = (p || "").split("/").filter(Boolean).pop() || "index";
+    name = name.replace(/\.html?$/i, "");
+    return name === "" ? "index" : name;
+  }
   function markActiveNav(){
-    var path = location.pathname.split("/").pop() || "index.html";
+    var current = pageKey(location.pathname);
     document.querySelectorAll(".nav-links a").forEach(function(a){
-      var href = a.getAttribute("href");
-      if(href === path || (path === "" && href === "index.html")){
+      var href = a.getAttribute("href") || "";
+      if(/^https?:/i.test(href)) return;
+      if(pageKey(href) === current){
         a.classList.add("active");
+        a.setAttribute("aria-current", "page");
       }
     });
   }
