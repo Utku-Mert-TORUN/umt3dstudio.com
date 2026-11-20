@@ -273,6 +273,7 @@
             <button class="btn btn-ghost" id="shareBtn" data-i18n="btnShare">🔗 Bağlantıyı kopyala</button>
             <button class="btn btn-ghost" id="printBtn" data-i18n="btnPrint">🖨️ PDF / Yazdır</button>
             <button class="btn btn-primary" id="batchAddBtn" data-i18n="btnBatchAdd">＋ Toplu listeye ekle</button>
+            <button class="btn btn-ghost" id="pngBtn" data-i18n="btnPng">🖼️ Görsel indir</button>
           </div>
           <details class="cmp" id="cmpBox" hidden>
             <summary data-i18n="cmpTitle">Malzeme karşılaştırması</summary>
@@ -300,11 +301,23 @@
             </div>
           </div>
 
+          <div class="frow single">
+            <div class="field">
+              <label data-i18n="logoLabel">Logo (isteğe bağlı)</label>
+              <div class="logo-row">
+                <input type="file" id="logoInput" accept="image/*">
+                <button class="btn btn-ghost hist-btn" id="logoClear" data-i18n="logoClear">Logoyu kaldır</button>
+              </div>
+              <small class="muted-note" id="logoHint" data-i18n="logoHint">PNG/JPG, en fazla 400 KB. Tarayıcında saklanır.</small>
+            </div>
+          </div>
+
           <hr class="div">
 
           <div class="quote-card" id="quoteCard">
             <div class="quote-top">
               <div>
+                <img id="qLogo" alt="" hidden style="max-height:44px;max-width:150px;display:block;margin-bottom:8px;">
                 <div class="biz" id="qBiz">Umt3D Studio</div>
                 <div class="mono" style="font-size:11px; color:var(--muted); margin-top:2px;" id="qCust">—</div>
               </div>

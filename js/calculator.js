@@ -5,6 +5,8 @@
 /* ---------------- i18n ---------------- */
 var STR = {
   tr:{
+    btnPng:"🖼️ Görsel indir", pngKicker:"Baskı fiyat teklifi", logoLabel:"Logo (isteğe bağlı)", logoClear:"Logoyu kaldır",
+    logoHint:"PNG/JPG, en fazla 400 KB. Tarayıcında saklanır.", logoTooBig:"Bu dosya çok büyük (en fazla 400 KB).",
     btnBatchAdd:"＋ Toplu listeye ekle", batchTitle:"Toplu teklif listesi", batchCopy:"📋 Listeyi kopyala", batchClear:"Listeyi temizle",
     batchGrand:"Genel toplam", batchEmpty:"Listede henüz kalem yok. Bir hesaplamayı “Toplu listeye ekle” ile buraya ekle.",
     batchQty:"Adet", batchRemove:"Kaldır", batchNone:"—",
@@ -46,6 +48,8 @@ var STR = {
     dateLocale:"tr-TR"
   },
   en:{
+    btnPng:"🖼️ Download image", pngKicker:"Printing price quote", logoLabel:"Logo (optional)", logoClear:"Remove logo",
+    logoHint:"PNG/JPG, max 400 KB. Stored in your browser.", logoTooBig:"This file is too large (max 400 KB).",
     btnBatchAdd:"＋ Add to batch list", batchTitle:"Batch quote list", batchCopy:"📋 Copy list", batchClear:"Clear list",
     batchGrand:"Grand total", batchEmpty:"No items yet. Use “Add to batch list” to add a calculation here.",
     batchQty:"Qty", batchRemove:"Remove", batchNone:"—",
@@ -1591,6 +1595,7 @@ $("batchAddBtn").addEventListener("click", function(){
   a.push({name: name, qty: 1, unit: calc.grandTRY});
   saveBatch(a);
   renderBatch();
+  buzz();
   $("batchCard").scrollIntoView({behavior: "smooth", block: "nearest"});
 });
 $("batchCopyBtn").addEventListener("click", function(){
@@ -1609,6 +1614,83 @@ $("batchClearBtn").addEventListener("click", function(){
   renderBatch();
 });
 $("mbQuoteBtn").addEventListener("click", function(){ $("quoteBtn").click(); });
+
+/* ---------------- titreşim, logo, görsel dışa aktarma ---------------- */
+function buzz(){ try{ if(navigator.vibrate) navigator.vibrate(12); }catch(e){ /* ignore */ } }
+var LOGO_KEY = "umt3d_logo_v1";
+function applyLogo(src){
+  var img = $("qLogo");
+  if(!img) return;
+  if(src){ img.src = src; img.hidden = false; }
+  else { img.removeAttribute("src"); img.hidden = true; }
+}
+try{ applyLogo(localStorage.getItem(LOGO_KEY)); }catch(e){ /* ignore */ }
+$("logoInput").addEventListener("change", function(){
+  var f = $("logoInput").files && $("logoInput").files[0];
+  if(!f) return;
+  if(f.size > 400000){ $("logoHint").textContent = t("logoTooBig"); $("logoInput").value = ""; return; }
+  var r = new FileReader();
+  r.onload = function(){
+    try{ localStorage.setItem(LOGO_KEY, r.result); }catch(e){ /* ignore */ }
+    applyLogo(r.result);
+  };
+  r.readAsDataURL(f);
+});
+$("logoClear").addEventListener("click", function(){
+  try{ localStorage.removeItem(LOGO_KEY); }catch(e){ /* ignore */ }
+  $("logoInput").value = "";
+  applyLogo(null);
+});
+
+$("pngBtn").addEventListener("click", function(){
+  var calc = window.__lastCalc;
+  if(!calc) return;
+  var W = 1080, H = 1350;
+  var c = document.createElement("canvas");
+  c.width = W; c.height = H;
+  var g = c.getContext("2d");
+  var bg = g.createLinearGradient(0, 0, W, H);
+  bg.addColorStop(0, "#0B1030"); bg.addColorStop(1, "#070B1F");
+  g.fillStyle = bg; g.fillRect(0, 0, W, H);
+  var gl1 = g.createRadialGradient(180, 140, 40, 180, 140, 720);
+  gl1.addColorStop(0, "rgba(139,108,255,.45)"); gl1.addColorStop(1, "rgba(139,108,255,0)");
+  g.fillStyle = gl1; g.fillRect(0, 0, W, H);
+  var gl2 = g.createRadialGradient(W - 80, H - 160, 40, W - 80, H - 160, 700);
+  gl2.addColorStop(0, "rgba(34,211,238,.28)"); gl2.addColorStop(1, "rgba(34,211,238,0)");
+  g.fillStyle = gl2; g.fillRect(0, 0, W, H);
+
+  var sym = symbolFor(currency);
+  function money(v){ return sym + " " + fmt(fx(v).value, 2); }
+  g.fillStyle = "#EEF1FF"; g.font = "700 56px sans-serif"; g.fillText("Umt3D Studio", 80, 140);
+  g.fillStyle = "#9AA6CC"; g.font = "500 32px sans-serif"; g.fillText(t("pngKicker"), 80, 196);
+  g.fillStyle = "#EEF1FF"; g.font = "600 46px sans-serif";
+  g.fillText(($("partName").value || "").trim() || "—", 80, 300);
+  g.fillStyle = "#9AA6CC"; g.font = "500 30px sans-serif";
+  g.fillText(new Date().toLocaleDateString(t("dateLocale")), 80, 350);
+
+  g.fillStyle = "#9AA6CC"; g.font = "500 34px sans-serif";
+  g.fillText(t("rowSubtotal") + ": " + money(calc.subtotalTRY), 80, 470);
+  g.fillText(t("rowMargin") + ": " + money(calc.marginTRY), 80, 520);
+  if(calc.vatTRY > 0){
+    g.fillText(t("rowVat") + ": " + money(calc.vatTRY), 80, 570);
+  }
+
+  var bigLabel = calc.vatTRY > 0 ? t("rowGrand") : t("rowTotal");
+  g.fillStyle = "#9AA6CC"; g.font = "600 38px sans-serif";
+  g.fillText(bigLabel, 80, 760);
+  g.fillStyle = "#6EE7B7"; g.font = "800 150px sans-serif";
+  g.fillText(money(calc.grandTRY), 80, 930);
+
+  g.fillStyle = "#9AA6CC"; g.font = "500 28px sans-serif";
+  g.fillText("umt3dstudio.com · " + t("footer").slice(0, 60), 80, H - 80);
+
+  var a = document.createElement("a");
+  a.download = "umt3d-teklif.png";
+  a.href = c.toDataURL("image/png");
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+});
 
 /* ---------------- init ---------------- */
 function init(){

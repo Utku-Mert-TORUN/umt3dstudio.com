@@ -56,6 +56,9 @@
       <div class="stat"><div class="num mono">13</div><div class="lbl">Malzeme profili</div></div>
       <div class="stat"><div class="num mono">0₺</div><div class="lbl">Kurulum / abonelik</div></div>
     </div>
+    <div class="trust-row" aria-label="Güven">
+      <span>🔒 Kayıt yok</span><span>⚡ Kurulum yok</span><span>🧾 Veriler cihazında kalır</span><span>🆓 Ücretsiz</span>
+    </div>
   </section>
   </div>
 
@@ -124,6 +127,59 @@
     </div>
   </section>
 
+  <section class="section" id="canli">
+    <div class="section-head reveal">
+      <h2>Canlı örnek</h2>
+      <p>Gramajı ve süreyi kaydır, fiyat anında değişsin. Bu örnek sabit varsayılan değerlerle çalışır; gerçek hesap için hesaplayıcıyı kullan.</p>
+    </div>
+    <div class="demo-grid reveal">
+      <div class="demo-card">
+        <label class="demo-field">
+          <span>Filament <output id="demoGramsOut">42 g</output></span>
+          <input type="range" id="demoGrams" min="5" max="500" step="1" value="42">
+        </label>
+        <label class="demo-field">
+          <span>Baskı süresi <output id="demoHoursOut">3 sa 15 dk</output></span>
+          <input type="range" id="demoHours" min="0.25" max="48" step="0.25" value="3.25">
+        </label>
+        <div class="demo-note" id="demoBreak"></div>
+      </div>
+      <div class="demo-result">
+        <small>Müşteriye fiyat (örnek)</small>
+        <strong class="mono" id="demoTotal">₺ 0,00</strong>
+        <span>Kâr %35 dahil</span>
+      </div>
+    </div>
+    <div class="sample-quote reveal" aria-label="Örnek teklif">
+      <div class="sq-head">
+        <div><strong>Umt3D Studio</strong><small>Örnek teklif · #2026-001</small></div>
+        <span class="sq-tag">ÖRNEK</span>
+      </div>
+      <div class="sq-row"><span>Ara toplam (maliyet)</span><span class="mono">₺ 1.240,00</span></div>
+      <div class="sq-row"><span>Kâr marjı</span><span class="mono">₺ 434,00</span></div>
+      <div class="sq-row sq-total"><span>Müşteriye Fiyat</span><span class="mono">₺ 1.674,00</span></div>
+    </div>
+  </section>
+
+  <section class="section" id="galeri" hidden>
+    <div class="section-head reveal">
+      <h2>Son baskılar</h2>
+      <p>Gerçek baskılardan kareler.</p>
+    </div>
+    <div class="gallery" id="gallery"></div>
+  </section>
+
+  <section class="section" id="yapimci">
+    <div class="author card reveal">
+      <div class="avatar" aria-hidden="true">UM</div>
+      <div>
+        <h2>Yapımcı</h2>
+        <p>Umt3D Studio, 3D baskı işlerinin fiyatlandırmasını kolaylaştırmak için Utku Mert Torun tarafından geliştirildi. Öneri, hata bildirimi ve yeni malzeme ya da yazıcı istekleri için Instagram'dan yazabilirsin.</p>
+        <a class="btn btn-ghost" href="https://instagram.com/utku_mrt_2.1.1" target="_blank" rel="noopener">📷 @utku_mrt_2.1.1</a>
+      </div>
+    </div>
+  </section>
+
   <div class="cta-band reveal">
     <h2>Fiyat vermeden önce bir kez hesapla.</h2>
     <p>Ücretsiz, kayıt gerektirmez, hiçbir verin sunucuya gönderilmez.</p>
@@ -165,6 +221,7 @@
 </footer>
 
 <script>document.getElementById("yr").textContent = new Date().getFullYear();</script>
+<script>window.GALLERY = [];</script>
 <script src="js/site.js"></script>
 </body>
 </html>

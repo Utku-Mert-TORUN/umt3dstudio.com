@@ -284,3 +284,6 @@ hr.div{border:none; border-top:1px solid var(--border); margin:14px 0;}
 /* Performans: kaydırmada kasmayı önlemek için bulanıklık kaldırıldı */
 .card{ -webkit-backdrop-filter:none; backdrop-filter:none; }
 .mobile-bar{ -webkit-backdrop-filter:none; backdrop-filter:none; background:var(--surface-2); }
+
+.logo-row{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+.logo-row input[type=file]{ flex:1 1 180px; min-width:0; font-size:14px; }
