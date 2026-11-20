@@ -183,7 +183,7 @@ hr.div{border:none; border-top:1px solid var(--border); margin:14px 0;}
 /* ---- quote section ---- */
 .quote-card{border:1.5px solid var(--fg); border-radius:14px; padding:18px; background:var(--surface);}
 .quote-top{display:flex; justify-content:space-between; gap:12px; border-bottom:2px solid var(--fg); padding-bottom:12px; margin-bottom:12px;}
-.quote-top .biz{font-family:'Syne',sans-serif; font-weight:800; font-size:17px;}
+.quote-top .biz{font-family:'Space Grotesk',sans-serif; font-weight:800; font-size:17px;}
 .quote-top .meta{text-align:right; font-family:'Space Mono',monospace; font-size:11px; color:var(--muted);}
 .quote-row{display:flex; justify-content:space-between; font-size:13px; padding:5px 0;}
 .quote-row.tot{font-weight:800; font-size:16px; border-top:1.5px solid var(--fg); margin-top:8px; padding-top:10px;}
@@ -302,7 +302,7 @@ hr.div{border:none; border-top:1px solid var(--border); margin:14px 0;}
 .spool-form{ display:grid; grid-template-columns:1fr 120px auto; gap:8px; margin-top:14px; }
 .spool-use{ display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
 .spool-use select{ flex:1 1 180px; }
-.price-card > summary{ cursor:pointer; font-family:'Syne',sans-serif; font-weight:700; font-size:17px; }
+.price-card > summary{ cursor:pointer; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:17px; }
 #priceList{ margin-top:10px; display:grid; grid-template-columns:1fr 1fr; gap:4px 16px; }
 .price-sec{ grid-column:1 / -1; font-family:'Space Mono',monospace; font-size:11.5px; color:var(--accent-2); text-transform:uppercase; letter-spacing:.08em; margin-top:10px; }
 .price-row{ display:flex; justify-content:space-between; align-items:center; gap:10px; font-size:13.5px; padding:6px 0; border-bottom:1px dashed var(--border); }

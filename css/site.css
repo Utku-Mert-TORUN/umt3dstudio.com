@@ -97,7 +97,7 @@ body{
   padding-right:max(16px, env(safe-area-inset-right,0px));
 }
 h1,h2,h3,h4,.display{
-  font-family:'Syne',sans-serif; text-wrap:balance;
+  font-family:'Space Grotesk',sans-serif; text-wrap:balance;
   letter-spacing:-.02em; margin:0; line-height:1.2;
 }
 /* Daha okunaklı tipografi ölçek */
@@ -206,9 +206,9 @@ body.loaded .hero-section .hero-stats  { animation:fadeSlideUp .6s cubic-bezier(
   width:34px; height:34px; border-radius:9px; flex:none;
   background:linear-gradient(135deg, var(--accent), var(--accent-2));
   display:flex; align-items:center; justify-content:center;
-  font-family:'Syne',sans-serif; font-weight:800; color:#fff; font-size:15px;
+  font-family:'Space Grotesk',sans-serif; font-weight:800; color:#fff; font-size:15px;
 }
-.nav .brandname{font-family:'Syne',sans-serif; font-weight:700; font-size:16px; white-space:nowrap;}
+.nav .brandname{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:16px; white-space:nowrap;}
 .nav .brandname small{display:block; font-family:'Space Mono',monospace; font-weight:400; font-size:10px; color:var(--muted); letter-spacing:.04em;}
 .nav-links{display:flex; align-items:center; gap:4px;}
 .nav-links a{
@@ -334,7 +334,7 @@ body.loaded .hero-section .hero-stats  { animation:fadeSlideUp .6s cubic-bezier(
   border-right:1px solid var(--border);
 }
 .hero-stats .stat:last-child{ border-right:none; }
-.hero-stats .num{font-family:'Syne',sans-serif; font-weight:800; font-size:24px; color:var(--accent); line-height:1;}
+.hero-stats .num{font-family:'Space Grotesk',sans-serif; font-weight:800; font-size:24px; color:var(--accent); line-height:1;}
 .hero-stats .lbl{font-family:'Space Mono',monospace; font-size:10px; color:var(--muted); letter-spacing:.04em; text-transform:uppercase; margin-top:5px;}
 
 /* ---------------- home: feature grid ---------------- */
@@ -514,7 +514,7 @@ html{ scrollbar-width:thin; scrollbar-color:var(--accent) var(--surface-2); }
   position:absolute; inset:12px; border-radius:50%;
   display:flex; align-items:center; justify-content:center;
   background:var(--surface-2); border:1px solid var(--border);
-  font-family:'Syne',sans-serif; font-weight:800; font-size:30px; letter-spacing:-.02em; color:var(--fg);
+  font-family:'Space Grotesk',sans-serif; font-weight:800; font-size:30px; letter-spacing:-.02em; color:var(--fg);
   backdrop-filter:blur(var(--glass-blur));
 }
 @keyframes orbSpin{ to{ transform:rotate(360deg); } }
@@ -539,7 +539,7 @@ html{ scrollbar-width:thin; scrollbar-color:var(--accent) var(--surface-2); }
 }
 .marquee-track{
   display:flex; gap:44px; width:max-content; animation:marquee 34s linear infinite;
-  font-family:'Syne',sans-serif; font-weight:700; font-size:clamp(14px,2vw,18px);
+  font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(14px,2vw,18px);
   text-transform:uppercase; letter-spacing:.07em; color:var(--muted);
 }
 .marquee-track span{ white-space:nowrap; display:inline-flex; align-items:center; gap:44px; }
@@ -552,7 +552,7 @@ html{ scrollbar-width:thin; scrollbar-color:var(--accent) var(--surface-2); }
 .feature-card{ position:relative; overflow:hidden; counter-increment:feat; }
 .feature-card::before{
   content:"0" counter(feat); position:absolute; top:14px; right:20px;
-  font-family:'Syne',sans-serif; font-weight:800; font-size:52px; line-height:1;
+  font-family:'Space Grotesk',sans-serif; font-weight:800; font-size:52px; line-height:1;
   color:var(--accent); opacity:.1; pointer-events:none;
 }
 .feature-card::after, .step::after{
@@ -687,7 +687,7 @@ body, .card, .btn, .feature-card, .step, .footer-inner, .footer-bottom, input, s
 .demo-result{ display:flex; flex-direction:column; justify-content:center; align-items:flex-start; gap:6px;
   background:linear-gradient(150deg, color-mix(in srgb, var(--accent) 22%, var(--surface)), color-mix(in srgb, var(--accent-2) 14%, var(--surface))); }
 .demo-result small{ color:var(--muted); text-transform:uppercase; letter-spacing:.08em; font-size:11.5px; font-weight:700; }
-.demo-result strong{ font-size:clamp(30px,5vw,44px); color:var(--mint); line-height:1.1; font-family:'Syne',sans-serif; }
+.demo-result strong{ font-size:clamp(30px,5vw,44px); color:var(--mint); line-height:1.1; font-family:'Space Grotesk',sans-serif; }
 .demo-result > span{ color:var(--muted); font-size:13px; }
 
 .sample-quote{
@@ -695,7 +695,7 @@ body, .card, .btn, .feature-card, .step, .footer-inner, .footer-bottom, input, s
   border-radius:18px; padding:22px; box-shadow:var(--shadow-sm);
 }
 .sq-head{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; }
-.sq-head strong{ display:block; font-family:'Syne',sans-serif; }
+.sq-head strong{ display:block; font-family:'Space Grotesk',sans-serif; }
 .sq-head small{ color:var(--muted); font-family:'Space Mono',monospace; font-size:11px; }
 .sq-tag{ font-family:'Space Mono',monospace; font-size:10.5px; padding:4px 9px; border-radius:999px; background:color-mix(in srgb, var(--accent) 16%, transparent); color:var(--accent); font-weight:700; }
 .sq-row{ display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed var(--border); font-size:14px; color:var(--muted); }
@@ -712,7 +712,7 @@ body, .card, .btn, .feature-card, .step, .footer-inner, .footer-bottom, input, s
 .author p{ color:var(--muted); margin-bottom:14px; }
 .avatar{
   flex:none; width:64px; height:64px; border-radius:18px; display:flex; align-items:center; justify-content:center;
-  font-family:'Syne',sans-serif; font-weight:800; font-size:20px; color:#fff;
+  font-family:'Space Grotesk',sans-serif; font-weight:800; font-size:20px; color:#fff;
   background:linear-gradient(135deg, var(--accent), var(--accent-2));
 }
 @media (max-width:600px){ .author{ flex-direction:column; } }
@@ -869,3 +869,29 @@ body{
   background:var(--accent); color:#fff; font-weight:700; text-decoration:none;
 }
 .skip-link:focus{ top:12px; }
+
+/* ==========================================================================
+   Yazı dengesi: başlıklar Space Grotesk (dar ve okunaklı), gövde Manrope,
+   mono yalnızca küçük etiket ve rakamlarda. Aşırı harf aralığı azaltıldı.
+   ========================================================================== */
+h1, h2, h3, h4, .display, .nav .brandname, .feature-card h3, .step h3, .cta-band h2 {
+  font-family:'Space Grotesk', 'Manrope', sans-serif;
+  font-weight:700;
+  letter-spacing:-.015em;
+  line-height:1.15;
+}
+h1{ font-weight:700; letter-spacing:-.025em; }
+.hero-section h1{ letter-spacing:-.02em; line-height:1.1; }
+.hero-section .lede, .section-head p, .feature-card p, .step p, .cta-band p, .content-page p, .content-page li{
+  font-family:'Manrope', sans-serif;
+}
+.eyebrow{ font-size:12px !important; letter-spacing:.06em !important; font-weight:700; }
+.marquee-track{ letter-spacing:.02em !important; font-size:clamp(13px,1.6vw,16px) !important; }
+.cta-band h2{ text-transform:none !important; letter-spacing:-.02em !important; font-size:clamp(22px,3.2vw,30px) !important; }
+.section-head h2::before{ letter-spacing:0; }
+.nav .brandname small, .footer-inner h4, .footer-bottom, .hero-stats .lbl, .trust-row span, .sq-tag, .demo-note, .sq-head small, .price-sec, .content-page .updated{
+  letter-spacing:.03em !important;
+}
+.hero-stats .num, .hero-stats .lbl{ font-family:'Space Grotesk', sans-serif; }
+.hero-stats .lbl{ font-family:'Manrope', sans-serif; text-transform:none; font-size:12px; letter-spacing:0 !important; font-weight:600; }
+.btn{ font-family:'Manrope', sans-serif; font-weight:700; letter-spacing:0; }
