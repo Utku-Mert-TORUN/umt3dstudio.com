@@ -15,16 +15,19 @@
     <linearGradient id="right" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#00E5FF"/><stop offset="1" stop-color="#39FFB0"/>
     </linearGradient>
+    <linearGradient id="word" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#CFF9FF"/>
+    </linearGradient>
   </defs>
-  <rect x="8" y="8" width="496" height="496" rx="112" fill="url(#bg)" stroke="url(#edge)" stroke-width="10"/>
-  <!-- izometrik küp: baskı parçası -->
-  <path d="M256 128 L378 198 L256 268 L134 198 Z" fill="url(#top)"/>
-  <path d="M134 198 L256 268 L256 392 L134 322 Z" fill="url(#left)"/>
-  <path d="M256 268 L378 198 L378 322 L256 392 Z" fill="url(#right)" opacity=".92"/>
-  <path d="M256 128 L378 198 L256 268 L134 198 Z" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="4" stroke-linejoin="round"/>
-  <!-- katman çizgileri -->
-  <path d="M256 268 L256 392" stroke="#fff" stroke-opacity=".25" stroke-width="4"/>
-  <path d="M150 262 L240 316 M150 294 L240 348" stroke="#fff" stroke-opacity=".12" stroke-width="3"/>
+  <rect x="8" y="8" width="496" height="496" rx="110" fill="url(#bg)" stroke="url(#edge)" stroke-width="12"/>
+  <!-- küçük izometrik küp -->
+  <path d="M256 60 L340 108 L256 156 L172 108 Z" fill="url(#top)"/>
+  <path d="M172 108 L256 156 L256 214 L172 166 Z" fill="url(#left)"/>
+  <path d="M256 156 L340 108 L340 166 L256 214 Z" fill="url(#right)" opacity=".92"/>
+  <path d="M256 60 L340 108 L256 156 L172 108 Z" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="3" stroke-linejoin="round"/>
+  <!-- marka adı -->
+  <text x="256" y="338" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" font-size="98" fill="url(#word)" letter-spacing="-2">UMT3D</text>
+  <text x="256" y="416" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="50" fill="#00E5FF" letter-spacing="14">STUDIO</text>
   <!-- filament çizgisi -->
-  <path d="M256 392 C256 430 300 436 330 420" fill="none" stroke="#39FFB0" stroke-width="10" stroke-linecap="round"/>
+  <path d="M96 452 L416 452" stroke="#39FFB0" stroke-width="6" stroke-linecap="round" opacity=".7"/>
 </svg>

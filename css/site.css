@@ -836,8 +836,8 @@ body{
 /* ==========================================================================
    Marka ikonu, ana ekran sahnesi (P2S yazıcı · logo · filament rulosu)
    ========================================================================== */
-.mark-img{ width:34px; height:34px; display:block; border-radius:8px; flex:none; filter:drop-shadow(0 0 12px color-mix(in srgb, var(--accent-2) 35%, transparent)); }
-.mark-img-sm{ width:30px; height:30px; }
+.mark-img{ width:44px; height:44px; display:block; border-radius:8px; flex:none; filter:drop-shadow(0 0 12px color-mix(in srgb, var(--accent-2) 35%, transparent)); }
+.mark-img-sm{ width:34px; height:34px; }
 
 .hero-stage{
   display:flex; align-items:center; justify-content:center; gap:clamp(10px,3vw,40px);
