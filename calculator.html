@@ -244,12 +244,20 @@
           <div class="field">
             <label><span data-i18n="lblFx">Döviz kuru (₺ başına)</span></label>
             <div class="unit-wrap"><input type="number" id="fxRate" min="0" step="0.01" placeholder="—"><span class="u mono" id="fxUnit">USD/₺</span></div>
+            <small class="muted-note" id="fxWarn" hidden role="status"></small>
           </div>
         </div>
         <div class="frow">
           <div class="field">
             <label><span data-i18n="lblTpl">Teklif şablonu</span></label>
-            <div class="selectwrap"><select id="tplSelect">
+            <div class="selectwrap"><select id="presetSelect" aria-label="Hazır ayar" style="margin-bottom:8px;">
+              <option value="" data-i18n="presetNone">—</option>
+              <option value="figure" data-i18n="presetFigure">Figür (hata %15, işçilik 30 dk)</option>
+              <option value="box" data-i18n="presetBox">Kutu (hata %10, işçilik 10 dk)</option>
+              <option value="proto" data-i18n="presetProto">Prototip (hata %20, işçilik 15 dk)</option>
+              <option value="large" data-i18n="presetLarge">Büyük parça (hata %12, işçilik 20 dk)</option>
+            </select></div>
+          <div class="selectwrap"><select id="tplSelect">
               <option value="" data-i18n="tplNone">—</option>
               <option value="bireysel" data-i18n="tplBireysel">Bireysel (%35 kâr)</option>
               <option value="kurumsal" data-i18n="tplKurumsal">Kurumsal (%20 kâr)</option>
@@ -367,6 +375,7 @@
         <option value="cancelled" data-i18n="statusCancelled">İptal</option>
       </select>
       <span id="histStats" class="muted-note"></span>
+      <button class="btn btn-ghost hist-btn" id="csvHistBtn" data-i18n="csvHist">CSV indir</button>
     </div>
     <div id="historyList"></div>
   </div>
@@ -376,11 +385,30 @@
       <h2 data-i18n="batchTitle">Toplu teklif listesi</h2>
       <div class="batch-actions">
         <button class="btn btn-ghost hist-btn" id="batchCopyBtn" data-i18n="batchCopy">📋 Listeyi kopyala</button>
+        <button class="btn btn-ghost hist-btn" id="csvBatchBtn" data-i18n="csvBatch">CSV indir</button>
         <button class="btn btn-ghost hist-btn" id="batchClearBtn" data-i18n="batchClear">Listeyi temizle</button>
       </div>
     </div>
     <div id="batchList"></div>
     <div class="batch-total"><span data-i18n="batchGrand">Genel toplam</span><span class="mono" id="batchTotal">—</span></div>
+  </div>
+
+  <div class="card" id="compareCard" style="margin-top:16px;">
+    <h2 data-i18n="cmpTitle2">Teklif karşılaştırma</h2>
+    <div class="spool-use">
+      <select id="cmpA" aria-label="A kaydı"></select>
+      <select id="cmpB" aria-label="B kaydı"></select>
+    </div>
+    <div id="cmpResult" style="margin-top:10px;"></div>
+  </div>
+
+  <div class="card" id="orderCard" style="margin-top:16px;">
+    <div class="batch-head">
+      <h2 data-i18n="ordTitle">Siparişler</h2>
+      <button class="btn btn-primary hist-btn" id="orderAddBtn" data-i18n="ordAdd">Bu teklifi sipariş olarak kaydet</button>
+    </div>
+    <div id="orderList"></div>
+    <div class="batch-total"><span id="orderSummary">—</span></div>
   </div>
 
   <div class="card" id="spoolCard" style="margin-top:16px;">
@@ -432,7 +460,7 @@
 <footer class="site-footer" style="margin-top:0;">
   <div class="footer-bottom" style="border-top:1px solid var(--border);">
     <span>© <span id="yr"></span> Umt3D Studio — Utku Mert Torun · <a href="https://instagram.com/utku_mrt_2.1.1" target="_blank" rel="noopener">@utku_mrt_2.1.1</a></span>
-    <span><a href="hakkinda.html">Hakkında</a> · <a href="iletisim.html">İletişim</a> · <a href="kosullar.html">Koşullar</a> · umt3dstudio.com</span>
+    <span><a href="hakkinda.html">Hakkında</a> · <a href="iletisim.html">İletişim</a> · <a href="kosullar.html">Koşullar</a> · <a href="blog.html">Yazılar</a> · <a href="oneri.html">Öneri</a> · umt3dstudio.com</span>
   </div>
 </footer>
 

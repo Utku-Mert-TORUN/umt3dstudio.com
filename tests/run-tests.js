@@ -72,8 +72,14 @@ function near(a, b, eps){ return Math.abs(a - b) <= eps; }
     check('Başka uygulamanın dosyası reddedilir', rejected);
     await page.evaluate(() => localStorage.removeItem('umt3d_batch_v1'));
 
+    console.log('CSV dışa aktarım');
+    const csv = await page.evaluate(() => window.Umt3D.toCsv([['Parça','Tutar'],['Kutu; büyük','1,5'],['Say "x"','2']]));
+    check('CSV BOM ile başlar', csv.charCodeAt(0) === 0xFEFF);
+    check('CSV noktalı virgül ayırıcı kullanır', csv.includes('Parça;Tutar'));
+    check('CSV içindeki ; ve " alanları kaçırılır', csv.includes('"Kutu; büyük"') && csv.includes('"Say ""x"""'), csv);
+
     console.log('Sayfa iskeleti ve erişilebilirlik');
-    for (const f of ['index.html','calculator.html','faq.html','privacy.html']){
+    for (const f of ['index.html','calculator.html','faq.html','privacy.html','blog.html','oneri.html','hakkinda.html','iletisim.html','kosullar.html','yazi-gcode-nasil-okunur.html','404.html']){
       await page.goto(BASE + '/' + f, { waitUntil: 'load' });
       const info = await page.evaluate(() => ({
         skip: !!document.querySelector('.skip-link'),

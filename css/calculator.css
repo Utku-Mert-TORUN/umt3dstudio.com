@@ -315,3 +315,15 @@ hr.div{border:none; border-top:1px solid var(--border); margin:14px 0;}
   .spool-row{ grid-template-columns:1fr 34px; }
   .spool-bar{ grid-column:1 / -1; grid-row:2; }
 }
+
+/* ---------------- siparişler ---------------- */
+.order-row{ display:grid; grid-template-columns:1fr auto; gap:8px 10px; align-items:center; padding:10px 0; border-bottom:1px solid var(--border); }
+.order-row:last-child{ border-bottom:none; }
+.order-info{ min-width:0; display:flex; flex-direction:column; gap:2px; }
+.order-info strong{ font-size:14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.order-info span{ font-size:11.5px; color:var(--muted); }
+.order-paid{ display:flex; align-items:center; gap:6px; font-size:13px; cursor:pointer; }
+.order-row input[type=date]{ font-size:13px; padding:6px 8px; }
+.order-row.is-paid{ opacity:.7; }
+.order-row.is-paid .hist-amt{ text-decoration:line-through; }
+@media (max-width:600px){ .order-row{ grid-template-columns:1fr; } }

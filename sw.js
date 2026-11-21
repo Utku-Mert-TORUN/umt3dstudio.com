@@ -1,10 +1,13 @@
 /* Umt3D Studio — basit offline önbellek.
    HTML/CSS/JS için önce ağ (güncel kalsın), ağ yoksa önbellek. Diğer istekler dokunulmaz. */
-var CACHE = "umt3d-v4";
+var CACHE = "umt3d-v5";
 var SHELL = [
   "./", "index.html", "calculator.html", "faq.html", "privacy.html", "hakkinda.html", "iletisim.html", "kosullar.html",
+  "blog.html", "yazi-gcode-nasil-okunur.html", "yazi-baski-maliyeti-formulu.html", "yazi-basarisizlik-payi.html", "yazi-elektrik-maliyeti.html",
+  "oneri.html", "404.html",
   "css/site.css", "css/calculator.css", "js/site.js", "js/calculator.js",
-  "manifest.webmanifest", "favicon.ico", "assets/umt3d-icon.svg", "assets/p2s-printer.svg", "assets/filament-spool.svg", "icons/icon-192.png", "icons/icon-512.png"
+  "manifest.webmanifest", "favicon.ico", "assets/umt3d-icon.svg", "assets/p2s-printer.svg", "assets/filament-spool.svg",
+  "icons/icon-192.png", "icons/icon-512.png"
 ];
 
 self.addEventListener("install", function (e) {

@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Öneri ve İstek — Umt3D Studio</title>
+<meta name="description" content="Yeni yazıcı, malzeme veya özellik önerisi hazırla; metni kopyalayıp Instagram üzerinden gönder.">
+<meta name="author" content="Utku Mert Torun">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://umt3dstudio.com/oneri.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Umt3D Studio">
+<meta property="og:title" content="Öneri ve İstek — Umt3D Studio">
+<meta property="og:description" content="Yeni yazıcı, malzeme veya özellik önerisi hazırla; metni kopyalayıp Instagram üzerinden gönder.">
+<meta property="og:url" content="https://umt3dstudio.com/oneri.html">
+<meta property="og:image" content="https://umt3dstudio.com/assets/og.png">
+<meta property="og:locale" content="tr_TR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#070B1F">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/umt3d-icon.svg?v=3" type="image/svg+xml">
+<link rel="icon" href="favicon.ico?v=3">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="css/site.css">
+</head>
+<body>
+<a class="skip-link" href="#main">İçeriğe geç</a>
+
+<header class="site-header">
+  <nav class="nav">
+    <a href="index.html" class="brand">
+      <img class="mark-img" src="assets/umt3d-icon.svg?v=3" alt="Umt3D Studio" width="44" height="44">
+      <div class="brandname">Umt3D Studio<small>FİYATLANDIRMA ARACI</small></div>
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html">Ana Sayfa</a>
+      <a href="calculator.html">Hesaplayıcı</a>
+      <a href="faq.html">SSS</a>
+      <a href="privacy.html">Gizlilik</a>
+    </div>
+    <div class="nav-right">
+      <div class="theme-toggle">
+        <button data-theme="light" title="Açık tema" aria-label="Açık tema">☀</button>
+        <button data-theme="auto" title="Sistem" aria-label="Sistem">●</button>
+        <button data-theme="dark" title="Koyu tema" aria-label="Koyu tema">☾</button>
+      </div>
+      <button class="nav-burger" aria-label="Menü" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+</header>
+
+<main class="content-page" id="main" tabindex="-1">
+  <span class="eyebrow">ÖNERİ</span>
+  <h1>Öneri ve istek gönder</h1>
+  <p class="updated">Yeni bir yazıcı, malzeme ya da özellik istiyorsan buradan hazırla.</p>
+  <p>Formu doldur, metni kopyala ve Instagram üzerinden gönder. Sunucu kullanmadığım için mesaj doğrudan bana ulaşmaz; kopyalayıp gönderman gerekiyor.</p>
+  <form id="oneriForm" class="oneri-form" onsubmit="return false;">
+    <label>Öneri türü
+      <select id="oTip">
+        <option value="Yazıcı">Yazıcı</option>
+        <option value="Malzeme">Malzeme</option>
+        <option value="Özellik">Özellik</option>
+        <option value="Hata">Hata bildirimi</option>
+        <option value="Diğer">Diğer</option>
+      </select>
+    </label>
+    <label>Adın (isteğe bağlı)
+      <input type="text" id="oAd" maxlength="60">
+    </label>
+    <label>Konu (örn. Bambu Lab A1 mini)
+      <input type="text" id="oKonu" maxlength="120">
+    </label>
+    <label>Açıklama
+      <textarea id="oNot" rows="5" maxlength="1000"></textarea>
+    </label>
+    <div class="oneri-actions">
+      <button class="btn btn-primary" type="button" id="oKopyala">📋 Metni kopyala</button>
+      <a class="btn btn-ghost" href="https://instagram.com/utku_mrt_2.1.1" target="_blank" rel="noopener">📷 Instagram'da yaz</a>
+    </div>
+    <p class="muted-note" id="oDurum" role="status"></p>
+    <pre class="oneri-preview" id="oOnizle" aria-label="Önizleme"></pre>
+  </form>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div>
+      <div class="fbrand">
+        <img class="mark-img mark-img-sm" src="assets/umt3d-icon.svg?v=3" alt="" width="34" height="34">
+        <strong style="font-family:'Space Grotesk',sans-serif;">Umt3D Studio</strong>
+      </div>
+      <p>3D baskı işlerinde doğru fiyatı bulmak isteyen herkes için ücretsiz, tarayıcı tabanlı bir hesaplayıcı.</p>
+    </div>
+    <div>
+      <h4>Site</h4>
+      <div class="footer-links">
+        <a href="index.html">Ana Sayfa</a>
+        <a href="calculator.html">Hesaplayıcı</a>
+        <a href="faq.html">SSS</a>
+        <a href="hakkinda.html">Hakkında</a>
+        <a href="iletisim.html">İletişim</a>
+        <a href="privacy.html">Gizlilik</a>
+        <a href="kosullar.html">Kullanım Koşulları</a>
+        <a href="blog.html">Yazılar</a>
+        <a href="oneri.html">Öneri Gönder</a>
+      </div>
+    </div>
+    <div>
+      <h4>Geliştirici</h4>
+      <div class="footer-links">
+        <span style="color:var(--fg); font-weight:700; font-size:13.5px;">Utku Mert Torun</span>
+        <a href="https://instagram.com/utku_mrt_2.1.1" target="_blank" rel="noopener">📷 @utku_mrt_2.1.1</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© <span id="yr"></span> Umt3D Studio — Utku Mert Torun</span>
+    <span>umt3dstudio.com</span>
+  </div>
+</footer>
+
+<script>document.getElementById("yr").textContent = new Date().getFullYear();</script>
+<script>window.UMT_ANALYTICS_TOKEN = "";</script>
+<script>
+  (function(){
+    function metin(){
+      var v = function(id){ return (document.getElementById(id).value || "").trim(); };
+      var lines = ["Umt3D Studio — " + v("oTip") + (v("oKonu") ? ": " + v("oKonu") : "")];
+      if(v("oAd")) lines.push("Ad: " + v("oAd"));
+      if(v("oNot")) lines.push("", v("oNot"));
+      return lines.join("\n");
+    }
+    function guncelle(){ document.getElementById("oOnizle").textContent = metin(); }
+    ["oTip","oAd","oKonu","oNot"].forEach(function(id){
+      document.getElementById(id).addEventListener("input", guncelle);
+      document.getElementById(id).addEventListener("change", guncelle);
+    });
+    document.getElementById("oKopyala").addEventListener("click", function(){
+      var t = metin(), durum = document.getElementById("oDurum");
+      var done = function(){ durum.textContent = "Metin panoya kopyalandı. Instagram'da gönderebilirsin."; };
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(t).then(done, function(){ durum.textContent = "Kopyalanamadı; metni önizlemeden elle seçebilirsin."; });
+      } else { durum.textContent = "Kopyalanamadı; metni önizlemeden elle seçebilirsin."; }
+    });
+    guncelle();
+  })();
+</script>
+<script src="js/site.js"></script>
+</body>
+</html>

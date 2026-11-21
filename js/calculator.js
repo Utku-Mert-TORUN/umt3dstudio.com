@@ -5,6 +5,11 @@
 /* ---------------- i18n ---------------- */
 var STR = {
   tr:{
+    cmpTitle2:"Teklif karşılaştırma", cmpPick:"Karşılaştırılacak kayıtları geçmişten seç.", cmpNeedTotal:"Bu kayıtta toplam bilgisi yok (eski kayıt). Yeni bir teklifi geçmişe kaydet.",
+    cmpDiff:"Fark", cmpSame:"Aynı tutar",
+    presetLbl:"Hazır ayar (örnek)", presetNone:"—", presetFigure:"Figür (hata %15, işçilik 30 dk)", presetBox:"Kutu (hata %10, işçilik 10 dk)", presetProto:"Prototip (hata %20, işçilik 15 dk)", presetLarge:"Büyük parça (hata %12, işçilik 20 dk)",
+    ordTitle:"Siparişler", ordAdd:"Bu teklifi sipariş olarak kaydet", ordEmpty:"Henüz sipariş yok.", ordPaid:"Ödendi", ordOpen:"Açık alacak", ordDelete:"Siparişi sil", ordDue:"Teslim tarihi",
+    csvBatch:"CSV indir", csvHist:"CSV indir", fxWarn:"Kur bilgisi bir haftadan eski ya da girilmemiş. Güncel kuru kontrol et.",
     histRemove:"Sil",
     spoolTitle:"Makara takibi", spoolName:"Makara adı (örn. PLA Siyah)", spoolGrams:"Başlangıç gramı", spoolAdd:"Makara ekle",
     spoolUse:"Seçili makaradan bu baskıyı düş", spoolEmpty:"Henüz makara eklenmedi.", spoolDel:"Makarayı sil", spoolSel:"Makara",
@@ -58,6 +63,11 @@ var STR = {
     dateLocale:"tr-TR"
   },
   en:{
+    cmpTitle2:"Quote comparison", cmpPick:"Pick two records from history to compare.", cmpNeedTotal:"This record has no total (older record). Save a new quote to history.",
+    cmpDiff:"Difference", cmpSame:"Same amount",
+    presetLbl:"Quick preset (example)", presetNone:"—", presetFigure:"Figure (15% fail, 30 min labor)", presetBox:"Box (10% fail, 10 min labor)", presetProto:"Prototype (20% fail, 15 min labor)", presetLarge:"Large part (12% fail, 20 min labor)",
+    ordTitle:"Orders", ordAdd:"Save this quote as an order", ordEmpty:"No orders yet.", ordPaid:"Paid", ordOpen:"Open receivables", ordDelete:"Delete order", ordDue:"Due date",
+    csvBatch:"Download CSV", csvHist:"Download CSV", fxWarn:"Exchange rate is older than a week or not entered. Please check the current rate.",
     histRemove:"Delete",
     spoolTitle:"Spool tracking", spoolName:"Spool name (e.g. PLA Black)", spoolGrams:"Starting grams", spoolAdd:"Add spool",
     spoolUse:"Deduct this print from selected spool", spoolEmpty:"No spools added yet.", spoolDel:"Delete spool", spoolSel:"Spool",
@@ -1316,6 +1326,7 @@ function render(){
   };
   renderComparison();
   renderBatch();
+  checkFx();
   $("mbTotal").textContent = symbolFor(currency) + " " + fmt(fx(grandTRY).value, 2);
   updateQuoteIfOpen();
 }
@@ -1605,10 +1616,12 @@ $("histSaveBtn").addEventListener("click", function(){
     label: mode === "fdm" ? "FDM" : "RESIN",
     amount: symbolFor(currency) + " " + fmt(fx(calc.grandTRY).value, 2),
     snap: takeSnapshot(),
-    status: "pending"
+    status: "pending",
+    total: calc.grandTRY
   });
   saveHistoryList(list);
   renderHistory();
+  fillCompareSelects();
 });
 
 /* ---------------- toplu teklif listesi ---------------- */
@@ -1991,6 +2004,7 @@ if($("histFilter")) $("histFilter").addEventListener("change", renderHistory);
 
 /* Test ve gelişmiş kullanım için saf yardımcılar (yalnızca okunur) */
 window.Umt3D = {
+  toCsv: toCsv,
   parseGcode: parseGcode,
   parseDurationToMinutes: parseDurationToMinutes,
   lengthToGrams: lengthToGrams,
@@ -1998,6 +2012,188 @@ window.Umt3D = {
   exportBackupJSON: exportBackupJSON,
   importBackupJSON: importBackupJSON
 };
+
+/* ---------------- hazır ayarlar (örnek değerler, düzenlenebilir) ---------------- */
+var PRESETS = {
+  figure:{failRate:15, laborTime:30, margin:40},
+  box:{failRate:10, laborTime:10, margin:30},
+  proto:{failRate:20, laborTime:15, margin:25},
+  large:{failRate:12, laborTime:20, margin:30}
+};
+$("presetSelect").addEventListener("change", function(){
+  var p = PRESETS[$("presetSelect").value];
+  if(!p) return;
+  $("failRate").value = p.failRate;
+  $("laborTime").value = p.laborTime;
+  $("margin").value = p.margin;
+  render();
+  saveProfile();
+});
+
+/* ---------------- kur uyarısı ---------------- */
+var FX_DATE_KEY = "umt3d_fx_date_v1";
+function checkFx(){
+  var box = $("fxWarn");
+  if(!box) return;
+  var stale = false;
+  if(currency !== "TRY"){
+    var d = parseInt(localStorage.getItem(FX_DATE_KEY) || "0", 10);
+    stale = !d || (Date.now() - d > 7 * 24 * 3600 * 1000) || !$("fxRate").value;
+  }
+  box.hidden = !stale;
+  box.textContent = stale ? t("fxWarn") : "";
+}
+$("fxRate").addEventListener("input", function(){
+  try{ localStorage.setItem(FX_DATE_KEY, String(Date.now())); }catch(e){ /* ignore */ }
+  checkFx();
+});
+
+/* ---------------- teklif karşılaştırma (geçmişten iki kayıt) ---------------- */
+function fillCompareSelects(){
+  var list = loadHistory();
+  ["cmpA","cmpB"].forEach(function(id, k){
+    var sel = $(id);
+    if(!sel) return;
+    var prev = sel.value;
+    sel.innerHTML = "";
+    list.forEach(function(it, i){
+      var o = document.createElement("option");
+      o.value = String(i);
+      o.textContent = (it.date || "") + " · " + (it.part || "—") + " · " + it.amount;
+      sel.appendChild(o);
+    });
+    if(prev && sel.querySelector('option[value="' + prev + '"]')) sel.value = prev;
+    else if(list[k] && k === 1 && list.length > 1) sel.value = "1";
+  });
+  renderCompare();
+}
+function renderCompare(){
+  var out = $("cmpResult");
+  if(!out) return;
+  var list = loadHistory();
+  if(list.length < 2){ out.textContent = t("cmpPick"); return; }
+  var a = list[+$("cmpA").value], b = list[+$("cmpB").value];
+  if(!a || !b){ out.textContent = t("cmpPick"); return; }
+  if(typeof a.total !== "number" || typeof b.total !== "number"){ out.textContent = t("cmpNeedTotal"); return; }
+  var sym = symbolFor(currency);
+  var va = fx(a.total).value, vb = fx(b.total).value;
+  var diff = vb - va;
+  var pct = va ? (diff / va * 100) : 0;
+  out.innerHTML = "";
+  var rows = [
+    [(a.part || "A") + " (A)", sym + " " + fmt(va, 2)],
+    [(b.part || "B") + " (B)", sym + " " + fmt(vb, 2)],
+    [t("cmpDiff"), (Math.abs(diff) < 0.005 ? t("cmpSame") : (diff > 0 ? "+" : "−") + sym + " " + fmt(Math.abs(diff), 2) + " (" + (pct >= 0 ? "+" : "") + fmt(pct, 1) + "%)")]
+  ];
+  rows.forEach(function(r){
+    var row = document.createElement("div");
+    row.className = "cmp-row";
+    var l = document.createElement("span"); l.textContent = r[0];
+    var v = document.createElement("span"); v.className = "mono"; v.textContent = r[1];
+    row.appendChild(l); row.appendChild(v); out.appendChild(row);
+  });
+}
+["cmpA","cmpB"].forEach(function(id){ $(id).addEventListener("change", renderCompare); });
+
+/* ---------------- siparişler ve açık alacak ---------------- */
+var ORDER_KEY = "umt3d_orders_v1";
+function loadOrders(){
+  try{ var a = JSON.parse(localStorage.getItem(ORDER_KEY) || "[]"); return Array.isArray(a) ? a : []; }
+  catch(e){ return []; }
+}
+function saveOrders(a){
+  try{ localStorage.setItem(ORDER_KEY, JSON.stringify(a.slice(0, 200))); }catch(e){ /* ignore */ }
+}
+function renderOrders(){
+  var box = $("orderList");
+  if(!box) return;
+  var list = loadOrders();
+  var sym = symbolFor(currency);
+  box.innerHTML = "";
+  if(!list.length){
+    var e = document.createElement("div");
+    e.className = "muted-note";
+    e.textContent = t("ordEmpty");
+    box.appendChild(e);
+  }
+  var open = 0;
+  list.forEach(function(o, i){
+    if(!o.paid) open += o.totalTRY;
+    var row = document.createElement("div");
+    row.className = "order-row" + (o.paid ? " is-paid" : "");
+    var info = document.createElement("div");
+    info.className = "order-info";
+    var nm = document.createElement("strong"); nm.textContent = (o.customer || "—") + " · " + (o.part || "—");
+    var meta = document.createElement("span"); meta.className = "mono"; meta.textContent = o.date + (o.due ? " · " + t("ordDue") + ": " + o.due : "");
+    info.appendChild(nm); info.appendChild(meta);
+    var amt = document.createElement("div"); amt.className = "mono hist-amt"; amt.textContent = sym + " " + fmt(fx(o.totalTRY).value, 2);
+    var paid = document.createElement("label"); paid.className = "order-paid";
+    var cb = document.createElement("input"); cb.type = "checkbox"; cb.checked = !!o.paid;
+    cb.addEventListener("change", function(){ var a = loadOrders(); if(a[i]){ a[i].paid = cb.checked; saveOrders(a); renderOrders(); } });
+    var ps = document.createElement("span"); ps.textContent = t("ordPaid");
+    paid.appendChild(cb); paid.appendChild(ps);
+    var due = document.createElement("input"); due.type = "date"; due.value = o.dueISO || ""; due.setAttribute("aria-label", t("ordDue"));
+    due.addEventListener("change", function(){ var a = loadOrders(); if(a[i]){ a[i].dueISO = due.value; a[i].due = due.value; saveOrders(a); renderOrders(); } });
+    var del = document.createElement("button"); del.className = "btn btn-ghost hist-btn"; del.type = "button"; del.textContent = "✕"; del.setAttribute("aria-label", t("ordDelete"));
+    del.addEventListener("click", function(){ var a = loadOrders(); a.splice(i, 1); saveOrders(a); renderOrders(); });
+    row.appendChild(info); row.appendChild(amt); row.appendChild(paid); row.appendChild(due); row.appendChild(del);
+    box.appendChild(row);
+  });
+  $("orderSummary").textContent = t("ordOpen") + ": " + sym + " " + fmt(fx(open).value, 2);
+}
+$("orderAddBtn").addEventListener("click", function(){
+  var calc = window.__lastCalc;
+  if(!calc) return;
+  var a = loadOrders();
+  a.unshift({
+    date: new Date().toLocaleDateString(t("dateLocale")),
+    customer: ($("custName").value || "").trim(),
+    part: ($("partName").value || "").trim(),
+    totalTRY: calc.grandTRY,
+    due: "", dueISO: "",
+    paid: false
+  });
+  saveOrders(a);
+  renderOrders();
+});
+
+/* ---------------- CSV dışa aktarım (Türkçe Excel için noktalı virgül, UTF-8 BOM) ---------------- */
+function csvCell(v){
+  var s = (v === null || v === undefined) ? "" : String(v);
+  if(/[";\n\r]/.test(s)) s = '"' + s.replace(/"/g, '""') + '"';
+  return s;
+}
+function toCsv(rows){
+  return "﻿" + rows.map(function(r){ return r.map(csvCell).join(";"); }).join("\r\n") + "\r\n";
+}
+function downloadText(name, text, type){
+  var blob = new Blob([text], {type: type || "text/csv;charset=utf-8"});
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+$("csvBatchBtn").addEventListener("click", function(){
+  var items = loadBatch();
+  if(!items.length) return;
+  var rows = [["Parça", "Adet", "Birim (TRY)", "Satır toplamı (TRY)"]];
+  items.forEach(function(it){
+    rows.push([it.name, it.qty, fmt(it.unit, 2), fmt(it.unit * it.qty, 2)]);
+  });
+  rows.push(["Genel toplam", "", "", fmt(batchSumTRY(items), 2)]);
+  downloadText("umt3d-toplu-teklif.csv", toCsv(rows));
+});
+$("csvHistBtn").addEventListener("click", function(){
+  var list = loadHistory();
+  if(!list.length) return;
+  var rows = [["Tarih", "Parça", "Mod", "Tutar", "Durum", "Toplam (TRY)"]];
+  list.forEach(function(it){
+    rows.push([it.date, it.part, it.label, it.amount, it.status || "pending", typeof it.total === "number" ? fmt(it.total, 2) : ""]);
+  });
+  downloadText("umt3d-teklif-gecmisi.csv", toCsv(rows));
+});
 
 /* ---------------- init ---------------- */
 function init(){
@@ -2051,8 +2247,11 @@ function init(){
 
   renderPriceEditor();
   renderSpools();
+  renderOrders();
   applySharedHash();
   renderHistory();
+  fillCompareSelects();
+  checkFx();
   updateUnitsLabels();
   applyI18n();
   render();
