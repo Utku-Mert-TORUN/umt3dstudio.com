@@ -847,8 +847,9 @@ body{
 .hero-orb span img{ width:62%; height:62%; display:block; }
 .hs-side{ margin:0; flex:0 1 auto; width:clamp(92px,17vw,150px); }
 .hs-side img{
-  width:100%; height:auto; display:block;
-  filter:drop-shadow(0 12px 26px rgba(0,0,0,.45)) drop-shadow(0 0 22px color-mix(in srgb, var(--accent) 30%, transparent));
+  width:100%; aspect-ratio:1 / 1; height:auto; display:block; object-fit:cover;
+  border-radius:18px; border:1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  box-shadow:0 12px 26px rgba(0,0,0,.45), 0 0 22px color-mix(in srgb, var(--accent) 30%, transparent);
   animation:bob 6s ease-in-out infinite;
 }
 .hs-right img{ animation-delay:-3s; animation-duration:7.5s; }
