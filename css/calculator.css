@@ -327,3 +327,5 @@ hr.div{border:none; border-top:1px solid var(--border); margin:14px 0;}
 .order-row.is-paid{ opacity:.7; }
 .order-row.is-paid .hist-amt{ text-decoration:line-through; }
 @media (max-width:600px){ .order-row{ grid-template-columns:1fr; } }
+
+.sample-row{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:10px; }

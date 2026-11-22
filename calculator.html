@@ -85,7 +85,11 @@
           <div class="ic">📄</div>
           <div class="t1" data-i18n="dropT1">G-code dosyasını buraya bırak</div>
           <div class="t2" data-i18n="dropT2">ya da tıklayıp seç — hiçbir şey sunucuya yüklenmez, her şey tarayıcında kalır</div>
-          <input type="file" id="fileInput" accept=".gcode,.gco,.g,.bgcode,.txt" multiple>
+          <input type="file" id="fileInput" accept=".gcode,.gco,.g,.bgcode,.txt,.3mf" multiple>
+        </div>
+        <div class="sample-row">
+          <button type="button" class="btn btn-ghost" id="sampleBtn">🧪 Örnek G-code ile dene</button>
+          <small class="muted-note">Kendi dosyan yoksa örnek değerlerle sistemi deneyebilirsin.</small>
         </div>
         <div id="parseResult"></div>
       </div>
@@ -359,6 +363,7 @@
 
           <div class="copybar">
             <button class="btn btn-ghost" id="copyBtn" data-i18n="btnCopy">📋 Panoya Kopyala</button>
+            <button class="btn btn-ghost" id="waBtn" type="button">💬 WhatsApp'ta paylaş</button>
           </div>
         </div>
       </div>

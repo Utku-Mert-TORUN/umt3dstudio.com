@@ -113,7 +113,7 @@
     });
   }
 
-  /* Canlı örnek: kaydırıcılarla anlık fiyat (sabit varsayılanlarla) */
+  /* Canlı örnek: kaydırıcılarla anlık fiyat. Örnek teklif kartı da aynı hesapla güncellenir. */
   function initLiveDemo(){
     var g = document.getElementById("demoGrams");
     if(!g) return;
@@ -122,17 +122,29 @@
     var outH = document.getElementById("demoHoursOut");
     var tot = document.getElementById("demoTotal");
     var brk = document.getElementById("demoBreak");
+    var sqCost = document.getElementById("sqCost");
+    var sqMargin = document.getElementById("sqMargin");
+    var sqTotal = document.getElementById("sqTotal");
     var PRICE_KG = 650, KWH = 4.5, WATT = 0.21, MARGIN = 0.35;
-    var shown = 0, raf = null;
+    var shown = null, raf = null;
     function fmtTL(v){ return "₺ " + v.toLocaleString("tr-TR", {minimumFractionDigits:2, maximumFractionDigits:2}); }
+    function setTotal(v){
+      tot.textContent = fmtTL(v);
+      if(sqTotal) sqTotal.textContent = fmtTL(v);
+    }
     function tween(to){
+      /* İlk hesapta animasyon yok: değer doğrudan yazılır */
+      if(shown === null || (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches)){
+        shown = to; setTotal(to); return;
+      }
       var from = shown, start = performance.now(), dur = 380;
       if(raf) cancelAnimationFrame(raf);
       function step(now){
         var p = Math.min(1, (now - start) / dur), e = 1 - Math.pow(1 - p, 3);
         shown = from + (to - from) * e;
-        tot.textContent = fmtTL(shown);
+        setTotal(shown);
         if(p < 1) raf = requestAnimationFrame(step);
+        else { shown = to; setTotal(to); }
       }
       raf = requestAnimationFrame(step);
     }
@@ -140,11 +152,14 @@
       var grams = +g.value, hrs = +h.value;
       var mat = grams / 1000 * PRICE_KG;
       var elec = WATT * hrs * KWH;
-      var total = (mat + elec) * (1 + MARGIN);
+      var cost = mat + elec;
+      var total = cost * (1 + MARGIN);
       var H = Math.floor(hrs), M = Math.round((hrs - H) * 60);
       outG.textContent = grams + " g";
       outH.textContent = H + " sa " + M + " dk";
       brk.textContent = "Malzeme ₺" + mat.toFixed(0) + " · Elektrik ₺" + elec.toFixed(0);
+      if(sqCost) sqCost.textContent = fmtTL(cost);
+      if(sqMargin) sqMargin.textContent = fmtTL(total - cost);
       tween(total);
     }
     g.addEventListener("input", upd);

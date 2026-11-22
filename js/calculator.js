@@ -1104,11 +1104,51 @@ function readText(file){
     r.readAsText(file);
   });
 }
+/* .3mf (Bambu/Orca) bir zip dosyasıdır; içindeki plate_N.gcode okunur. Düz metin dosyaları olduğu gibi okunur. */
+function readAnyText(file){
+  if(/\.3mf$/i.test(file.name)){
+    return file.arrayBuffer().then(unzipGcode);
+  }
+  return readText(file);
+}
+function unzipGcode(buf){
+  var dv = new DataView(buf), u8 = new Uint8Array(buf);
+  var eocd = -1;
+  for(var i = buf.byteLength - 22; i >= Math.max(0, buf.byteLength - 65557); i--){
+    if(dv.getUint32(i, true) === 0x06054b50){ eocd = i; break; }
+  }
+  if(eocd < 0) return Promise.reject(new Error("zip-eocd"));
+  var count = dv.getUint16(eocd + 10, true), p = dv.getUint32(eocd + 16, true), entries = [];
+  var dec = new TextDecoder("utf-8");
+  for(var n = 0; n < count && p + 46 <= buf.byteLength; n++){
+    if(dv.getUint32(p, true) !== 0x02014b50) break;
+    var nlen = dv.getUint16(p + 28, true), elen = dv.getUint16(p + 30, true), clen = dv.getUint16(p + 32, true);
+    entries.push({
+      name: dec.decode(u8.subarray(p + 46, p + 46 + nlen)),
+      method: dv.getUint16(p + 10, true),
+      csize: dv.getUint32(p + 20, true),
+      loff: dv.getUint32(p + 42, true)
+    });
+    p += 46 + nlen + elen + clen;
+  }
+  var pick = entries.filter(function(e){ return /plate_\d+\.gcode$/i.test(e.name); })[0] ||
+             entries.filter(function(e){ return /\.gcode$/i.test(e.name); })[0];
+  if(!pick) return Promise.reject(new Error("no-gcode"));
+  var start = pick.loff + 30 + dv.getUint16(pick.loff + 26, true) + dv.getUint16(pick.loff + 28, true);
+  var data = u8.subarray(start, start + pick.csize);
+  if(pick.method === 0) return Promise.resolve(dec.decode(data));
+  if(pick.method === 8 && typeof DecompressionStream !== "undefined"){
+    var ds = new Blob([data]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
+    return new Response(ds).text();
+  }
+  return Promise.reject(new Error("unsupported-zip"));
+}
+
 function processMany(files){
   var list = Array.prototype.slice.call(files, 0, 30);
   list.reduce(function(p, file){
     return p.then(function(){
-      return readText(file).then(function(text){
+      return readAnyText(file).then(function(text){
         var density = num("density") || 1.24;
         var res = parseGcode(text, density);
         lastParsed = res;
@@ -1133,28 +1173,40 @@ function processMany(files){
 }
 
 function handleFile(file){
-  var reader = new FileReader();
-  reader.onload = function(){
-    var text = String(reader.result || "");
-    var density = num("density") || 1.24;
-    var res = parseGcode(text, density);
-    lastParsed = res;
-    renderParseResult(res, file.name);
-    if(res.weightG !== null){
-      $("weight").value = Math.round(res.weightG * 10) / 10;
-      $("weightAutoHint").innerHTML = '<span class="auto-pill">'+t("auto")+'</span>';
-    }
-    if(res.minutes !== null){
-      $("hours").value = Math.floor(res.minutes / 60);
-      $("minutes").value = res.minutes % 60;
-      $("timeAutoHint").innerHTML = '<span class="auto-pill">'+t("auto")+'</span>';
-    }
-    render();
-  };
-  reader.onerror = function(){
+  readAnyText(file).then(function(text){
+    applyGcodeText(text, file.name);
+  }).catch(function(){
     renderParseResult({weightG:null, minutes:null, source:null}, file.name, true);
-  };
-  reader.readAsText(file);
+  });
+}
+
+/* Sample G-code: örnek değerlerle sistemi denemek için (PrusaSlicer biçimi) */
+var SAMPLE_GCODE = [
+  "; Umt3D Studio örnek G-code",
+  "; filament used [g] = 42.0",
+  "; estimated printing time (normal mode) = 3h 15m 0s",
+  "G28 ; home"
+].join("\n");
+$("sampleBtn").addEventListener("click", function(){
+  applyGcodeText(SAMPLE_GCODE, "ornek.gcode");
+  $("parseResult").scrollIntoView({behavior:"smooth", block:"nearest"});
+});
+
+function applyGcodeText(text, name){
+  var density = num("density") || 1.24;
+  var res = parseGcode(text, density);
+  lastParsed = res;
+  renderParseResult(res, name);
+  if(res.weightG !== null){
+    $("weight").value = Math.round(res.weightG * 10) / 10;
+    $("weightAutoHint").innerHTML = '<span class="auto-pill">'+t("auto")+'</span>';
+  }
+  if(res.minutes !== null){
+    $("hours").value = Math.floor(res.minutes / 60);
+    $("minutes").value = res.minutes % 60;
+    $("timeAutoHint").innerHTML = '<span class="auto-pill">'+t("auto")+'</span>';
+  }
+  render();
 }
 
 function renderParseResult(res, filename, errored){
@@ -1376,9 +1428,7 @@ function updateQuoteIfOpen(){
   }
 }
 
-$("copyBtn").addEventListener("click", function(){
-  var calc = window.__lastCalc;
-  if(!calc) return;
+function buildQuoteText(calc){
   var sym = symbolFor(currency);
   var biz = $("bizName").value || "Umt3D Studio";
   var cust = $("custName").value || "—";
@@ -1405,6 +1455,20 @@ $("copyBtn").addEventListener("click", function(){
     (brandVal ? "  ·  " + (lang==="tr"?"Marka: ":"Brand: ") + brandVal : "");
   if(specLine) lines.splice(4, 0, specLine);
   var text = lines.join("\n");
+  return text;
+}
+
+$("waBtn").addEventListener("click", function(){
+  var calc = window.__lastCalc;
+  if(!calc) return;
+  var text = buildQuoteText(calc);
+  window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank", "noopener");
+});
+
+$("copyBtn").addEventListener("click", function(){
+  var calc = window.__lastCalc;
+  if(!calc) return;
+  var text = buildQuoteText(calc);
   function done(){
     var btn = $("copyBtn");
     var orig = btn.textContent;

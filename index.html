@@ -169,6 +169,7 @@
           <input type="range" id="demoHours" min="0.25" max="48" step="0.25" value="3.25">
         </label>
         <div class="demo-note" id="demoBreak"></div>
+        <small class="muted-note">Bu basit bir örnektir: fire payı, iş gücü ve kargo hesaba katılmaz. Gerçek teklif için hesaplayıcıyı kullan.</small>
       </div>
       <div class="demo-result">
         <small>Müşteriye fiyat (örnek)</small>
@@ -181,9 +182,9 @@
         <div><strong>Umt3D Studio</strong><small>Örnek teklif · #2026-001</small></div>
         <span class="sq-tag">ÖRNEK</span>
       </div>
-      <div class="sq-row"><span>Ara toplam (maliyet)</span><span class="mono">₺ 1.240,00</span></div>
-      <div class="sq-row"><span>Kâr marjı</span><span class="mono">₺ 434,00</span></div>
-      <div class="sq-row sq-total"><span>Müşteriye Fiyat</span><span class="mono">₺ 1.674,00</span></div>
+      <div class="sq-row"><span>Ara toplam (maliyet)</span><span class="mono" id="sqCost">₺ 0,00</span></div>
+      <div class="sq-row"><span>Kâr marjı</span><span class="mono" id="sqMargin">₺ 0,00</span></div>
+      <div class="sq-row sq-total"><span>Müşteriye Fiyat</span><span class="mono" id="sqTotal">₺ 0,00</span></div>
     </div>
   </section>
 
