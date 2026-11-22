@@ -54,7 +54,7 @@ var STR = {
     quoteHeadTitle:"Teklif Bilgileri", lblBizName:"İşletme adı", lblCustName:"Müşteri adı", lblPartName:"Parça / proje adı",
     btnCopy:"📋 Panoya Kopyala", footer:"Tüm hesaplamalar tarayıcında yapılır, hiçbir veri sunucuya gönderilmez.",
     rowMaterial:"Malzeme maliyeti", rowElec:"Elektrik maliyeti", rowFail:"Fire payı", rowPost:"Son işlem / işçilik",
-    rowDep:"Makine amortismanı", rowSubtotal:"Ara toplam (maliyet)", rowMargin:"Kâr marjı", rowTotal:"Müşteriye Fiyat",
+    rowDep:"Makine amortismanı", rowSubtotal:"Ara toplam (maliyet)", rowMargin:"Kâr marjı", rowShipping:"Kargo / paketleme", rowCommission:"Platform komisyonu (dahil)", lblPlatformFee:"Pazaryeri komisyonu", lblShippingFee:"Kargo / paketleme", donut_material:"Filament", donut_elec:"Elektrik", donut_other:"Diğer (fire, işçilik, amortisman)", donut_margin:"Kâr", donut_commission:"Platform komisyonu", rowTotal:"Müşteriye Fiyat",
     noFile:"Dosya tespit edilemedi, verileri elle gir.", fileOkWeight:"gram", fileOkTime:"süre",
     parsedBoth:"dosyadan okundu:", parsedPartial:"kısmen okundu, eksikleri elle tamamla:",
     parsedNone:"Bu dosyada tanınan bir slicer imzası bulunamadı. Gram ve süreyi elle girebilirsin.",
@@ -112,7 +112,7 @@ var STR = {
     quoteHeadTitle:"Quote Details", lblBizName:"Business name", lblCustName:"Customer name", lblPartName:"Part / project name",
     btnCopy:"📋 Copy to Clipboard", footer:"All calculations run in your browser — no data is sent anywhere.",
     rowMaterial:"Material cost", rowElec:"Electricity cost", rowFail:"Failure allowance", rowPost:"Post-processing / labor",
-    rowDep:"Machine depreciation", rowSubtotal:"Subtotal (cost)", rowMargin:"Profit margin", rowTotal:"Customer Price",
+    rowDep:"Machine depreciation", rowSubtotal:"Subtotal (cost)", rowMargin:"Profit margin", rowShipping:"Shipping / packaging", rowCommission:"Platform fee (incl.)", lblPlatformFee:"Marketplace fee", lblShippingFee:"Shipping / packaging", donut_material:"Filament", donut_elec:"Electricity", donut_other:"Other (waste, labor, depreciation)", donut_margin:"Profit", donut_commission:"Platform fee", rowTotal:"Customer Price",
     noFile:"Couldn't detect file data, enter values manually.", fileOkWeight:"grams", fileOkTime:"time",
     parsedBoth:"read from file:", parsedPartial:"partially read, fill in the rest manually:",
     parsedNone:"No recognized slicer signature found in this file. You can enter weight and time manually.",
@@ -531,6 +531,7 @@ function saveProfile(){
       elecPrice: $("elecPrice").value, filPrice: $("filPrice").value,
       failRate: $("failRate").value, postProcess: $("postProcess").value,
       minPrice: $("minPrice").value, vatRate: $("vatRate").value,
+      platformFee: $("platformFee").value, shippingFee: $("shippingFee").value,
       laborRate: $("laborRate").value, margin: $("margin").value,
       depToggle: $("depToggle").checked, printerCost: $("printerCost").value,
       lifetimeHours: $("lifetimeHours").value, fxRates: fxRates,
@@ -1185,6 +1186,10 @@ var SAMPLE_GCODE = [
   "; Umt3D Studio örnek G-code",
   "; filament used [g] = 42.0",
   "; estimated printing time (normal mode) = 3h 15m 0s",
+  "; layer_height = 0.2",
+  "; fill_density = 15%",
+  "; temperature = 215",
+  "; bed_temperature = 60",
   "G28 ; home"
 ].join("\n");
 $("sampleBtn").addEventListener("click", function(){
@@ -1195,6 +1200,7 @@ $("sampleBtn").addEventListener("click", function(){
 function applyGcodeText(text, name){
   var density = num("density") || 1.24;
   var res = parseGcode(text, density);
+  res.settings = parseSettings(text);
   lastParsed = res;
   renderParseResult(res, name);
   if(res.weightG !== null){
@@ -1207,6 +1213,51 @@ function applyGcodeText(text, name){
     $("timeAutoHint").innerHTML = '<span class="auto-pill">'+t("auto")+'</span>';
   }
   render();
+}
+
+/* ---------------- maliyet dağılım pastası ---------------- */
+var DONUT_KEYS = [["material","#FF6B00"],["elec","#3B82F6"],["other","#8B93A1"],["margin","#00AE42"],["commission","#FACC15"]];
+function renderDonut(parts){
+  var wrap = $("donutWrap"), donut = $("donut"), legend = $("donutLegend");
+  if(!wrap || !donut || !legend || !parts) return;
+  var total = 0;
+  DONUT_KEYS.forEach(function(k){ total += Math.max(0, parts[k[0]] || 0); });
+  if(!(total > 0)){ wrap.hidden = true; return; }
+  wrap.hidden = false;
+  var stops = [], acc = 0, html = "";
+  DONUT_KEYS.forEach(function(k){
+    var v = Math.max(0, parts[k[0]] || 0);
+    var pct = v / total * 100;
+    if(pct <= 0) return;
+    stops.push(k[1] + " " + acc.toFixed(2) + "% " + (acc + pct).toFixed(2) + "%");
+    acc += pct;
+    html += '<li><span class="dot" style="background:' + k[1] + '"></span>' + t("donut_" + k[0]) +
+            ' <b class="mono">%' + Math.round(pct) + '</b></li>';
+  });
+  donut.style.background = "conic-gradient(" + stops.join(",") + ")";
+  legend.innerHTML = html;
+}
+
+/* ---------------- G-code analiz rozetleri (katman, doluluk, sıcaklıklar) ---------------- */
+function firstSetting(text, names){
+  for(var i = 0; i < names.length; i++){
+    var re = new RegExp(";\\s*" + names[i] + "\\s*[=:]\\s*([^\\r\\n]+)", "i");
+    var m = re.exec(text);
+    if(m) return m[1].trim();
+  }
+  return null;
+}
+function parseSettings(text){
+  var layer = parseFloat(firstSetting(text, ["layer_height", "Layer height"]));
+  var fill  = parseFloat(firstSetting(text, ["fill_density", "sparse_infill_density", "Infill"]));
+  var nozzle = parseInt(firstSetting(text, ["temperature", "nozzle_temperature"]), 10);
+  var bed = parseInt(firstSetting(text, ["bed_temperature", "hot_plate_temp", "first_layer_bed_temperature"]), 10);
+  return {
+    layer: isNaN(layer) ? null : layer,
+    infill: isNaN(fill) ? null : fill,
+    nozzle: isNaN(nozzle) ? null : nozzle,
+    bed: isNaN(bed) ? null : bed
+  };
 }
 
 function renderParseResult(res, filename, errored){
@@ -1226,6 +1277,23 @@ function renderParseResult(res, filename, errored){
       (res.weightG !== null ? fmt(res.weightG,1)+" g" : "—") + " / " +
       (res.minutes !== null ? Math.floor(res.minutes/60)+"s "+(res.minutes%60)+"dk" : "—");
   }
+  var s = res.settings || {};
+  var badges = [];
+  if(s.layer !== null && s.layer !== undefined) badges.push("Katman " + s.layer + " mm");
+  if(s.infill !== null && s.infill !== undefined) badges.push("Doluluk %" + s.infill);
+  if(s.nozzle !== null && s.nozzle !== undefined) badges.push("Nozül " + s.nozzle + " °C");
+  if(s.bed !== null && s.bed !== undefined) badges.push("Tabla " + s.bed + " °C");
+  if(badges.length && !errored){
+    var row = document.createElement("div");
+    row.className = "badges-row";
+    badges.forEach(function(b){
+      var sp = document.createElement("span");
+      sp.className = "badge";
+      sp.textContent = b;
+      row.appendChild(sp);
+    });
+    div.appendChild(row);
+  }
   box.appendChild(div);
 }
 
@@ -1237,7 +1305,7 @@ $("depToggle").addEventListener("change", function(){
 
 /* ---------------- live recalculation ---------------- */
 var allInputs = ["weight","density","filPrice","watt","resinVol","resinPrice","resinWatt","resinConsumables",
-  "hours","minutes","elecPrice","failRate","postProcess","laborRate","laborTime","printerCost","lifetimeHours","margin"];
+  "hours","minutes","elecPrice","failRate","postProcess","laborRate","laborTime","printerCost","lifetimeHours","margin","platformFee","shippingFee"];
 allInputs.forEach(function(id){
   $(id).addEventListener("input", function(){ render(); scheduleSave(); });
 });
@@ -1311,7 +1379,8 @@ function render(){
     depTRY = (printerCost / lifetime) * totalHours;
   }
 
-  var subtotalTRY = baseCostTRY + failCostTRY + postTotalTRY + depTRY;
+  var shippingTRY = Math.max(0, num("shippingFee"));
+  var subtotalTRY = baseCostTRY + failCostTRY + postTotalTRY + depTRY + shippingTRY;
   var marginPct = num("margin") / 100;
   var marginTRY = subtotalTRY * marginPct;
   var totalTRY = subtotalTRY + marginTRY;
@@ -1321,6 +1390,14 @@ function render(){
     totalTRY = minTRY;
     marginTRY = totalTRY - subtotalTRY;
     minApplied = true;
+  }
+  /* Pazaryeri komisyonu: net kazanç hedeflenir, komisyon fiyata brüt olarak eklenir */
+  var feePct = Math.min(90, Math.max(0, num("platformFee"))) / 100;
+  var commissionTRY = 0;
+  if(feePct > 0){
+    var netTRY = totalTRY;
+    totalTRY = netTRY / (1 - feePct);
+    commissionTRY = totalTRY - netTRY;
   }
   var vatTRY = totalTRY * (num("vatRate") / 100);
   var grandTRY = totalTRY + vatTRY;
@@ -1348,6 +1425,8 @@ function render(){
   if(depTRY > 0) fxOk = addLine("rowDep", depTRY) && fxOk;
   fxOk = addLine("rowSubtotal", subtotalTRY, {sub:true}) && fxOk;
   fxOk = addLine("rowMargin", marginTRY, {sub:true}) && fxOk;
+  if(shippingTRY > 0) fxOk = addLine("rowShipping", shippingTRY, {sub:true}) && fxOk;
+  if(commissionTRY > 0) fxOk = addLine("rowCommission", commissionTRY, {sub:true}) && fxOk;
   if(vatTRY > 0){
     fxOk = addLine("rowTotal", totalTRY, {sub:true}) && fxOk;
     fxOk = addLine("rowVat", vatTRY, {sub:true}) && fxOk;
@@ -1374,9 +1453,11 @@ function render(){
   window.__lastCalc = {
     materialCostTRY:materialCostTRY, elecCostTRY:elecCostTRY, failCostTRY:failCostTRY,
     postTotalTRY:postTotalTRY, depTRY:depTRY, subtotalTRY:subtotalTRY, marginTRY:marginTRY, totalTRY:totalTRY,
-    vatTRY:vatTRY, grandTRY:grandTRY, minApplied:minApplied
+    vatTRY:vatTRY, grandTRY:grandTRY, minApplied:minApplied, shippingTRY:shippingTRY, commissionTRY:commissionTRY,
+    parts:{material:materialCostTRY, elec:elecCostTRY, other:consumablesTRY+failCostTRY+postTotalTRY+depTRY+shippingTRY, margin:marginTRY, commission:commissionTRY}
   };
   renderComparison();
+  renderDonut(window.__lastCalc.parts);
   renderBatch();
   checkFx();
   $("mbTotal").textContent = symbolFor(currency) + " " + fmt(fx(grandTRY).value, 2);
@@ -1528,7 +1609,7 @@ function renderComparison(){
 
 /* ---------------- ayar anlık görüntüsü (geçmiş + paylaşım bağlantısı) ---------------- */
 var SNAP_IDS = ["weight","density","filPrice","watt","hours","minutes","elecPrice","failRate","postProcess",
-  "laborRate","laborTime","margin","minPrice","vatRate","printerCost","lifetimeHours","resinVol","resinPrice","resinWatt","resinConsumables"];
+  "laborRate","laborTime","margin","minPrice","vatRate","platformFee","shippingFee","printerCost","lifetimeHours","resinVol","resinPrice","resinWatt","resinConsumables"];
 var SNAP_SELECTS = ["material","printer","resinPrinter","resinMaterial"];
 function takeSnapshot(){
   var s = {mode: mode, color: selectedColor, brand: $("materialBrand") ? $("materialBrand").value : "",
@@ -2289,6 +2370,8 @@ function init(){
       if(saved.laborRate !== undefined) $("laborRate").value = saved.laborRate;
       if(saved.margin !== undefined) $("margin").value = saved.margin;
       if(saved.minPrice !== undefined) $("minPrice").value = saved.minPrice;
+      if(saved.platformFee !== undefined) $("platformFee").value = saved.platformFee;
+      if(saved.shippingFee !== undefined) $("shippingFee").value = saved.shippingFee;
       if(saved.vatRate !== undefined) $("vatRate").value = saved.vatRate;
       if(saved.depToggle){ $("depToggle").checked = true; $("depFields").hidden = false; }
       if(saved.printerCost) $("printerCost").value = saved.printerCost;

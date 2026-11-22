@@ -272,6 +272,14 @@
             <label><span data-i18n="lblMinPrice">Taban (minimum) fiyat</span></label>
             <div class="unit-wrap"><input type="number" id="minPrice" min="0" step="10" value="0"><span class="u mono">₺</span></div>
           </div>
+          <div class="field">
+            <label><span data-i18n="lblPlatformFee">Pazaryeri komisyonu</span></label>
+            <div class="unit-wrap"><input type="number" id="platformFee" min="0" max="90" step="1" value="0"><span class="u">%</span></div>
+          </div>
+          <div class="field">
+            <label><span data-i18n="lblShippingFee">Kargo / paketleme</span></label>
+            <div class="unit-wrap"><input type="number" id="shippingFee" min="0" step="5" value="0"><span class="u mono">₺</span></div>
+          </div>
         </div>
         <div class="frow single">
           <div class="field">
@@ -359,6 +367,11 @@
             </div>
             <div id="qPart" style="font-weight:700; margin-bottom:10px; font-size:14px;">—</div>
             <div id="qRows"></div>
+          </div>
+
+          <div class="donut-wrap" id="donutWrap" hidden>
+            <div class="donut" id="donut" role="img" aria-label="Maliyet dağılımı"></div>
+            <ul class="donut-legend" id="donutLegend"></ul>
           </div>
 
           <div class="copybar">
