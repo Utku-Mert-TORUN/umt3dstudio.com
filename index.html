@@ -129,27 +129,40 @@
     </div>
   </section>
 
-  <section class="section" id="nasil">
+  <section class="section flow" id="nasil">
     <div class="section-head reveal">
       <h2>Nasıl çalışır?</h2>
       <p>Üç adımda, elinde fiyat teklifi hazır olur.</p>
     </div>
-    <div class="steps">
-      <div class="step reveal">
-        <div class="n">1</div>
-        <h3>Dosyanı yükle</h3>
-        <p>Slicer programından çıkan .gcode dosyasını sürükle bırak; hiçbir şey sunucuya gitmez, her şey tarayıcında kalır.</p>
+    <div class="flow-grid">
+      <div class="flow-visual" aria-hidden="true">
+        <figure class="is-on" data-s="1"><img src="assets/hero-printer.jpg" alt="" width="480" height="480" loading="lazy"></figure>
+        <figure data-s="2"><img src="assets/hero-filament.jpg" alt="" width="480" height="480" loading="lazy"></figure>
+        <figure data-s="3" class="flow-ticket">
+          <div class="ft-row"><span>Malzeme</span><span class="mono">₺ 27,30</span></div>
+          <div class="ft-row"><span>Elektrik</span><span class="mono">₺ 3,07</span></div>
+          <div class="ft-row"><span>Kâr (%35)</span><span class="mono">₺ 10,63</span></div>
+          <div class="ft-row ft-total"><span>Müşteriye fiyat</span><span class="mono">₺ 41,00</span></div>
+          <small>Örnek: 42 g, 3 sa 15 dk</small>
+        </figure>
       </div>
-      <div class="step reveal">
-        <div class="n">2</div>
-        <h3>Malzeme ve maliyetleri gir</h3>
-        <p>Malzeme ve yazıcını seç, elektrik birim fiyatını ve kâr marjını ayarla — bu bilgiler bir dahaki sefere hazır bekler.</p>
-      </div>
-      <div class="step reveal">
-        <div class="n">3</div>
-        <h3>Teklifi paylaş</h3>
-        <p>Maliyet fişini anında gör, istersen müşteri adıyla teklif oluştur ve panoya kopyala.</p>
-      </div>
+      <ol class="flow-steps">
+        <li class="flow-step is-on" data-s="1">
+          <div class="n">1</div>
+          <h3>Dosyanı yükle</h3>
+          <p>Slicer programından çıkan .gcode dosyasını sürükle bırak; hiçbir şey sunucuya gitmez, her şey tarayıcında kalır.</p>
+        </li>
+        <li class="flow-step" data-s="2">
+          <div class="n">2</div>
+          <h3>Malzeme ve maliyetleri gir</h3>
+          <p>Malzeme ve yazıcını seç, elektrik birim fiyatını ve kâr marjını ayarla — bu bilgiler bir dahaki sefere hazır bekler.</p>
+        </li>
+        <li class="flow-step" data-s="3">
+          <div class="n">3</div>
+          <h3>Teklifi paylaş</h3>
+          <p>Maliyet fişini anında gör, istersen müşteri adıyla teklif oluştur ve panoya kopyala.</p>
+        </li>
+      </ol>
     </div>
   </section>
 

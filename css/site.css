@@ -956,3 +956,54 @@ h1{ font-weight:700; letter-spacing:-.025em; }
   white-space:pre-wrap; word-break:break-word; margin:0; padding:14px; border-radius:10px;
   background:var(--surface-2); border:1px dashed var(--border); font-family:'Space Mono',monospace; font-size:13px; min-height:60px;
 }
+
+/* ---------------- ana sayfa: kaydırmalı adım akışı ---------------- */
+.flow-grid{ display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:start; }
+.flow-visual{ position:sticky; top:104px; height:min(68vh,540px); }
+.flow-visual figure{
+  position:absolute; inset:0; margin:0; opacity:0; transform:scale(.97);
+  transition:opacity .5s ease, transform .6s cubic-bezier(.22,1,.36,1);
+}
+.flow-visual figure.is-on{ opacity:1; transform:none; }
+.flow-visual img{
+  width:100%; height:100%; object-fit:cover; border-radius:18px;
+  border:1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  box-shadow:0 18px 40px rgba(0,0,0,.35);
+}
+.flow-ticket{
+  display:flex; flex-direction:column; justify-content:center; gap:12px; padding:34px;
+  background:var(--surface); border:1px solid var(--border); border-radius:18px; box-shadow:var(--shadow-sm);
+}
+.flow-ticket .ft-row{ display:flex; justify-content:space-between; font-size:15px; color:var(--muted); padding-bottom:10px; border-bottom:1px dashed var(--border); }
+.flow-ticket .ft-total{ color:var(--fg); font-weight:700; border-bottom:none; font-size:17px; }
+.flow-ticket .ft-total .mono{ color:var(--accent-ink); }
+.flow-ticket small{ color:var(--muted); font-size:12px; margin-top:6px; }
+.flow-steps{ list-style:none; margin:0; padding:0; }
+.flow-step{
+  min-height:52vh; display:flex; flex-direction:column; justify-content:center; padding:24px 28px;
+  border-left:2px solid var(--border); opacity:.42; transition:opacity .35s ease, border-color .35s ease;
+}
+.flow-step.is-on{ opacity:1; border-left-color:var(--accent); }
+.flow-step .n{ font-family:'JetBrains Mono','Space Mono',monospace; color:var(--accent-ink); font-size:13px; margin-bottom:10px; }
+.flow-step h3{ font-size:24px; margin-bottom:10px; letter-spacing:-.01em; }
+.flow-step p{ color:var(--muted); font-size:15.5px; line-height:1.65; max-width:46ch; }
+@media (max-width:860px){
+  .flow-grid{ grid-template-columns:1fr; gap:20px; }
+  .flow-visual{ display:none; }
+  .flow-step{ min-height:auto; opacity:1; padding:16px 18px; }
+  .flow-step h3{ font-size:19px; }
+}
+
+/* ---------------- açık tema: teknik çizim köşeleri ---------------- */
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]) .card,
+  :root:not([data-theme="dark"]) .feature-card,
+  :root:not([data-theme="dark"]) .step,
+  :root:not([data-theme="dark"]) .flow-ticket,
+  :root:not([data-theme="dark"]) .flow-visual img{ border-radius:4px; }
+}
+:root[data-theme="light"] .card,
+:root[data-theme="light"] .feature-card,
+:root[data-theme="light"] .step,
+:root[data-theme="light"] .flow-ticket,
+:root[data-theme="light"] .flow-visual img{ border-radius:4px; }

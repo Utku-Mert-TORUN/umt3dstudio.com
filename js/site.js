@@ -254,6 +254,24 @@
     main.setAttribute("tabindex", "-1");
   }
 
+  /* Ana sayfa: adım akışında görünen adıma göre sabit görsel değişir */
+  function initFlow(){
+    var steps = document.querySelectorAll(".flow-step");
+    var figs = document.querySelectorAll(".flow-visual figure");
+    if(!steps.length || !figs.length) return;
+    function activate(n){
+      steps.forEach(function(s){ s.classList.toggle("is-on", s.getAttribute("data-s") === n); });
+      figs.forEach(function(f){ f.classList.toggle("is-on", f.getAttribute("data-s") === n); });
+    }
+    if(!("IntersectionObserver" in window)) return;
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(en.isIntersecting) activate(en.target.getAttribute("data-s"));
+      });
+    }, {rootMargin:"-40% 0px -40% 0px", threshold:0});
+    steps.forEach(function(s){ io.observe(s); });
+  }
+
   document.addEventListener("DOMContentLoaded", function(){
     initAnalytics();
     initSkipLink();
@@ -262,6 +280,7 @@
     initInstallHint();
     initCountUp();
     initSpotlight();
+    initFlow();
     initPWA();
     initTheme();
     initNav();

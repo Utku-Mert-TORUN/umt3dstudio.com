@@ -1,6 +1,6 @@
 /* Umt3D Studio — basit offline önbellek.
    HTML/CSS/JS için önce ağ (güncel kalsın), ağ yoksa önbellek. Diğer istekler dokunulmaz. */
-var CACHE = "umt3d-v5";
+var CACHE = "umt3d-v6";
 var SHELL = [
   "./", "index.html", "calculator.html", "faq.html", "privacy.html", "hakkinda.html", "iletisim.html", "kosullar.html",
   "blog.html", "yazi-gcode-nasil-okunur.html", "yazi-baski-maliyeti-formulu.html", "yazi-basarisizlik-payi.html", "yazi-elektrik-maliyeti.html",

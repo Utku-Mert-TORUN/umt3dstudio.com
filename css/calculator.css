@@ -339,3 +339,7 @@ hr.div{border:none; border-top:1px solid var(--border); margin:14px 0;}
 
 /* ---------------- G-code rozetleri ---------------- */
 .badges-row{ display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+
+/* ---------------- hesaplayıcı: atölye paneli vurgusu ---------------- */
+.ticket .card{ border-top:3px solid var(--accent); }
+.ticket #qRows .mono, .ticket .mono{ font-variant-numeric:tabular-nums; }
